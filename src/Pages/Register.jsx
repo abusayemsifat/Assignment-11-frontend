@@ -16,9 +16,10 @@ const Register = () => {
         const name = e.target.name.value;
         const photoUrl = e.target.photoUrl;
         const file = photoUrl.files[0];
+        const role = e.target.role.value;
 
 
-        const uppercase = /[A-Z]/;
+        const uppercase = /[A-Z]/; 
         const lowercase = /[a-z]/;
 
         if (pass.length < 6) {
@@ -46,6 +47,7 @@ const Register = () => {
             pass,
             name,
             mainPhotoUrl,
+            role,
         }
 
         if (res.data.success == true) {
@@ -57,12 +59,12 @@ const Register = () => {
                     }).then(() => {
                         setUser(userCredential.user)
                         axios.post('http://localhost:5000/users', formData)
-                        .then(res =>{
-                          console.log(res.data);
-                        })
-                        .catch(err=>{
-                            console.log(err)
-                        })
+                            .then(res => {
+                                console.log(res.data);
+                            })
+                            .catch(err => {
+                                console.log(err)
+                            })
                     }).catch((error) => {
                         console.log(error)
                     });
@@ -102,6 +104,11 @@ const Register = () => {
                                 <input name='email' type="email" className="input" placeholder="Email" />
                                 <label className="label">PhotoUrl</label>
                                 <input name='photoUrl' type="file" className="input" placeholder="Enter your photoUrl" />
+                                <select name='role' defaultValue="Choose Role" className="select">
+                                    <option disabled={true}>Choose Role</option>
+                                    <option value='manager'>Manager</option>
+                                    <option value='buyer'>Buyer</option>
+                                </select>
                                 <label className="label">Password</label>
                                 <input name='password' type="password" className="input" placeholder="Password" />
 

@@ -1,10 +1,16 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router';
 import { AuthContext } from '../../Provider/AuthProvider';
+import { signOut } from 'firebase/auth';
+import auth from '../../Firebase/firebase.config';
 
 const Navbar = () => {
 
     const { user } = useContext(AuthContext)
+
+    const logout = ()=>{
+        signOut(auth)
+    }
 
     return (
         <div className="navbar bg-base-100 shadow-sm">
@@ -46,7 +52,7 @@ const Navbar = () => {
             </div>
             <div className="navbar-end">
                 {
-                    user ? (<button className='btn'>Logout</button>) : <Link to={'/login'} className="btn">Login</Link>
+                    user ? (<button onClick={logout} className='btn'>Logout</button>) : <Link to={'/login'} className="btn">Login</Link>
                 }
             </div>
         </div>
