@@ -1,10 +1,11 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 
 const AddProductForm = () => {
 
     const [showOnHome, setShowOnHome] = useState(false);
 
-    const handleAddProduct = (e) => {
+    const handleAddProduct = async (e) => {
         e.preventDefault();
         const form = e.target;
         const productName = form.productName.value
@@ -13,23 +14,41 @@ const AddProductForm = () => {
         const price = form.price.value
         const quantity = form.quantity.value
         const moq = form.moq.value
-        const productImage = form.productImage.value
+        const productImage = form.productImage
         const paymentOption = form.paymentOption.value
 
+        const file = productImage.files[0]
+
+        const res = await axios.post(`https://api.imgbb.com/1/upload?key=8e9f55218ce652e2b63014e113632992`, { image: file }, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+
+        const mainPhotoUrl = res.data.data.display_url
 
         const formData = {
             productName,
             description,
             category,
-            price,
-            quantity,
-            moq,
-            productImage,
+            price: parseInt(price),
+            quantity: parseInt(quantity),
+            moq: parseInt(moq),
+            productImage: mainPhotoUrl,
             paymentOption,
             showOnHome
         }
 
-        console.log(formData)
+        if (res.data.success == true) {
+            axios.post('http://localhost:5000/products', formData)
+                .then(res => {
+                    console.log(res.data);
+                    alert(res.data.insertedId)
+                })
+                .catch(err => console.log(err))
+        }
+
+
     }
 
     return (
