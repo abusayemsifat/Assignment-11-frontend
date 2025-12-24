@@ -2,37 +2,44 @@ import axios from "axios";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../Provider/AuthProvider";
 
-
-
 const axiosSecure = axios.create({
     baseURL: 'http://localhost:5000'
 })
 
-const useAxiosSecure = () =>{
+const useAxiosSecure = () => {
+    const { user } = useContext(AuthContext);
 
-    const {user} = useContext(AuthContext);
+    useEffect(() => {
+        const reqInterceptor = axiosSecure.interceptors.request.use(
+            async (config) => {
+                if (user) {
+                    const token = await user.getIdToken();
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+                return config;
+            },
+            (error) => {
+                return Promise.reject(error);
+            }
+        );
 
-    useEffect(()=>{
-        const reqInterceptor = axiosSecure.interceptors.request.use(config=>{
-            config.headers.Authorization = `Bearer ${user?.accessToken}`
-            return config
-        })
+        const resInterceptor = axiosSecure.interceptors.response.use(
+            (response) => {
+                return response;
+            },
+            (error) => {
+                console.log(error);
+                return Promise.reject(error);
+            }
+        );
 
-        const resInterceptor = axiosSecure.interceptors.response.use((response)=>{
-            return response
-        },(error)=>{
-            console.log(error);
-            return Promise.reject(error)
-        })
-
-        return () =>{
+        return () => {
             axiosSecure.interceptors.request.eject(reqInterceptor);
             axiosSecure.interceptors.response.eject(resInterceptor);
-        }
-    },[user])
+        };
+    }, [user]);
 
-    return axiosSecure
-
+    return axiosSecure;
 }
 
-export default useAxiosSecure
+export default useAxiosSecure;

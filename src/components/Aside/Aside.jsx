@@ -48,6 +48,19 @@ const Aside = () => {
                 </NavLink>
 
                 <NavLink
+                    to="/dashboard/all-users"
+                    className={({ isActive }) =>
+                        `${linkBase} ${isActive
+                            ? "bg-blue-600 text-white"
+                            : "hover:bg-gray-700"
+                        }`
+                    }
+                >
+                    <HomeIcon className="h-5 w-5" />
+                    All users
+                </NavLink>
+
+                <NavLink
                     to="/dashboard/manage-product"
                     className={({ isActive }) =>
                         `${linkBase} ${isActive

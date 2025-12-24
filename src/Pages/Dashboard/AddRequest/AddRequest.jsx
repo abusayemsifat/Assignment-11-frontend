@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../Provider/AuthProvider';
 import axios from 'axios';
-import useAxios from '../../../hooks/useAxios';
+import useAxiosSecure from '../../../hooks/useAxiosSecure';
 
 const AddRequest = () => {
 
@@ -11,7 +11,7 @@ const AddRequest = () => {
     const [district, setDistrict] = useState('')
     const [upazila, setUpazila] = useState('')
 
-    const axiosInstance = useAxios();
+    const axiosSecure = useAxiosSecure()
 
     useEffect(() => {
         axios.get('/upazila.json')
@@ -52,7 +52,7 @@ const AddRequest = () => {
             donation_status: 'pending'
         }
 
-        axiosInstance.post('/requests', formData)
+        axiosSecure.post('/requests', formData)
         .then(res=>{
             alert(res.data.insertedId)
         }).catch(err=> console.log(err))
