@@ -15,6 +15,7 @@ const AuthProvider = ({ children }) => {
     const [roleloading, setRoleLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [role, setRole] = useState('');
+    const [userStatus, setUserStatus] = useState('');
 
     const registerWithEmailPassword = (email, pass) => {
         return createUserWithEmailAndPassword(auth, email, pass)
@@ -43,6 +44,7 @@ const AuthProvider = ({ children }) => {
         axios.get(`https://backend-11-cyan.vercel.app/users/role/${user.email}`)
             .then(res => {
                 setRole(res.data.role)
+                setUserStatus(res.data.status)
                 setRoleLoading(false)
             })
     }, [user])
@@ -57,6 +59,7 @@ const AuthProvider = ({ children }) => {
         loading,
         role,
         roleloading,
+        userStatus
     }
 
     return (
