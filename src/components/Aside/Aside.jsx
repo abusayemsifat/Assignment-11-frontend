@@ -21,7 +21,8 @@ const Aside = () => {
             {/* Navigation */}
             <nav className="flex flex-col gap-3">
                 <NavLink
-                    to="/dashboard/main"
+                    to="/dashboard"
+                    end
                     className={({ isActive }) =>
                         `${linkBase} ${isActive
                             ? "bg-blue-600 text-white"
@@ -34,7 +35,7 @@ const Aside = () => {
                 </NavLink>
 
                 <NavLink
-                    to="/dashboard/add-product"
+                    to="/dashboard/add-request"
                     className={({ isActive }) =>
                         `${linkBase} ${isActive
                             ? "bg-blue-600 text-white"
@@ -43,7 +44,20 @@ const Aside = () => {
                     }
                 >
                     <HomeIcon className="h-5 w-5" />
-                    Add Product
+                    Add Request
+                </NavLink>
+
+                <NavLink
+                    to="/dashboard/manage-product"
+                    className={({ isActive }) =>
+                        `${linkBase} ${isActive
+                            ? "bg-blue-600 text-white"
+                            : "hover:bg-gray-700"
+                        }`
+                    }
+                >
+                    <HomeIcon className="h-5 w-5" />
+                    Manage Product
                 </NavLink>
 
                 <NavLink
