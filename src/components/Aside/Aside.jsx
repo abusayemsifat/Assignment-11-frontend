@@ -5,11 +5,23 @@ import {
     Cog6ToothIcon,
     ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
+import { useContext } from "react";
+import { AuthContext } from "../../Provider/AuthProvider";
+import { signOut } from "firebase/auth";
+import auth from "../../Firebase/firebase.config";
 
 const linkBase =
     "flex items-center gap-3 p-3 rounded-lg transition text-sm font-medium";
 
 const Aside = () => {
+
+    const { role } = useContext(AuthContext)
+    console.log('Current role:', role, typeof role);
+
+    const handleLogout = () => {
+        signOut(auth)
+    }
+
     return (
         <aside className="w-64 bg-gray-900 text-gray-200 min-h-screen p-5 flex flex-col">
 
@@ -34,31 +46,39 @@ const Aside = () => {
                     Dashboard
                 </NavLink>
 
-                <NavLink
-                    to="/dashboard/add-request"
-                    className={({ isActive }) =>
-                        `${linkBase} ${isActive
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-gray-700"
-                        }`
-                    }
-                >
-                    <HomeIcon className="h-5 w-5" />
-                    Add Request
-                </NavLink>
+                {
+                    role == 'donor' && (
+                        <NavLink
+                            to="/dashboard/add-request"
+                            className={({ isActive }) =>
+                                `${linkBase} ${isActive
+                                    ? "bg-blue-600 text-white"
+                                    : "hover:bg-gray-700"
+                                }`
+                            }
+                        >
+                            <HomeIcon className="h-5 w-5" />
+                            Add Request
+                        </NavLink>
+                    )
+                }
 
-                <NavLink
-                    to="/dashboard/all-users"
-                    className={({ isActive }) =>
-                        `${linkBase} ${isActive
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-gray-700"
-                        }`
-                    }
-                >
-                    <HomeIcon className="h-5 w-5" />
-                    All users
-                </NavLink>
+                {
+                    role == 'admin' && (
+                        <NavLink
+                            to="/dashboard/all-users"
+                            className={({ isActive }) =>
+                                `${linkBase} ${isActive
+                                    ? "bg-blue-600 text-white"
+                                    : "hover:bg-gray-700"
+                                }`
+                            }
+                        >
+                            <HomeIcon className="h-5 w-5" />
+                            All users
+                        </NavLink>
+                    )
+                }
 
                 <NavLink
                     to="/dashboard/manage-product"
@@ -102,7 +122,7 @@ const Aside = () => {
 
             {/* Logout */}
             <div className="mt-auto">
-                <button className="flex items-center gap-3 p-3 w-full rounded-lg text-left text-red-400 hover:bg-red-600 hover:text-white transition">
+                <button onClick={handleLogout} className="flex items-center gap-3 p-3 w-full rounded-lg text-left text-red-400 hover:bg-red-600 hover:text-white transition cursor-pointer">
                     <ArrowRightOnRectangleIcon className="h-5 w-5" />
                     Logout
                 </button>

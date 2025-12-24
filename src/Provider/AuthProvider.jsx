@@ -12,6 +12,7 @@ const googleProvider = new GoogleAuthProvider();
 const AuthProvider = ({ children }) => {
 
     const [loading, setLoading] = useState(true);
+    const [roleloading, setRoleLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [role, setRole] = useState('');
 
@@ -39,9 +40,10 @@ const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         if (!user) return;
-        axios.get(`http://localhost:5000/users/role/${user.email}`)
+        axios.get(`https://backend-11-cyan.vercel.app/users/role/${user.email}`)
             .then(res => {
                 setRole(res.data.role)
+                setRoleLoading(false)
             })
     }, [user])
 
@@ -54,6 +56,7 @@ const AuthProvider = ({ children }) => {
         handleGoogleSignin,
         loading,
         role,
+        roleloading,
     }
 
     return (
