@@ -13,7 +13,7 @@ const Navbar = () => {
     }
 
     return (
-        <div className="navbar bg-base-100 shadow-sm">
+        <div className="navbar bg-red-100 shadow-sm">
             <div className="navbar-start">
                 <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -27,7 +27,7 @@ const Navbar = () => {
                         <li><Link to={'/donate'}>Donate</Link></li>
                     </ul>
                 </div>
-                <a className="btn btn-ghost text-xl">daisyUI</a>
+                <a className="btn btn-ghost text-xl font-bold text-red-500">BLOOD+</a>
             </div>
             <div className="navbar-center hidden lg:flex">
                 <ul className="menu menu-horizontal px-1">
@@ -37,7 +37,9 @@ const Navbar = () => {
                 </ul>
             </div>
             <div className="navbar-end">
-                <Link to={'/dashboard'} className="btn mr-2">Dashboard</Link>
+                {
+                    user && <Link to={'/dashboard'} className="btn mr-2">Dashboard</Link>
+                }
                 {
                     user ? (<button onClick={logout} className='btn'>Logout</button>) : <Link to={'/login'} className="btn">Login</Link>
                 }
