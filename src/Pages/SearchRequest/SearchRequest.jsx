@@ -75,7 +75,7 @@ const SearchRequest = () => {
                     <button className="btn mt-[18px]">Search</button>
                 </form>
             </div>
-            <div className='grid grid-cols-3'>
+            <div className='grid grid-cols-3 mb-64'>
                 {
                     search.map(s =>
                         <p className='text-6xl font-bold text-red-400'>{s.blood_group}</p>
