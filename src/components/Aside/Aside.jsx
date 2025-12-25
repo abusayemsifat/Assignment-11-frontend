@@ -81,7 +81,7 @@ const Aside = () => {
                 }
 
                 <NavLink
-                    to="/dashboard/manage-product"
+                    to="/dashboard/my-request"
                     className={({ isActive }) =>
                         `${linkBase} ${isActive
                             ? "bg-blue-600 text-white"
@@ -90,7 +90,7 @@ const Aside = () => {
                     }
                 >
                     <HomeIcon className="h-5 w-5" />
-                    Manage Product
+                    My Request
                 </NavLink>
 
                 <NavLink
@@ -106,7 +106,7 @@ const Aside = () => {
                     Users
                 </NavLink>
 
-                <NavLink
+                {/* <NavLink
                     to="/dashboard/settings"
                     className={({ isActive }) =>
                         `${linkBase} ${isActive
@@ -117,7 +117,7 @@ const Aside = () => {
                 >
                     <Cog6ToothIcon className="h-5 w-5" />
                     Settings
-                </NavLink>
+                </NavLink> */}
             </nav>
 
             {/* Logout */}
