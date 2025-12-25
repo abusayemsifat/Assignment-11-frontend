@@ -94,19 +94,6 @@ const Aside = () => {
                 </NavLink>
 
                 <NavLink
-                    to="/dashboard/users"
-                    className={({ isActive }) =>
-                        `${linkBase} ${isActive
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-gray-700"
-                        }`
-                    }
-                >
-                    <UserCircleIcon className="h-5 w-5" />
-                    Users
-                </NavLink>
-
-                <NavLink
                     to="/dashboard/profile"
                     className={({ isActive }) =>
                         `${linkBase} ${isActive
