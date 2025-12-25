@@ -24,7 +24,18 @@ const MyRequest = () => {
     // console.log(myRequests)
     // console.log(totalRequest)
     // console.log(numberOfPages)
-    console.log(pages)
+    // console.log(pages)
+    const handlePrev = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1)
+        }
+    }
+
+    const handleNext = () => {
+        if (currentPage < pages.length) {
+            setCurrentPage(currentPage + 1)
+        }
+    }
 
     return (
         <div>
@@ -44,7 +55,7 @@ const MyRequest = () => {
                         {
                             myRequests.map((request, index) =>
                                 <tr>
-                                    <th>{index+1}</th>
+                                    <th>{(currentPage * 10) + (index + 1) - 10}</th>
                                     <td>{request.recipient_name}</td>
                                     <td>{request.hospital_name}</td>
                                     <td>{request.blood_group}</td>
@@ -54,16 +65,18 @@ const MyRequest = () => {
                     </tbody>
                 </table>
             </div>
-            <div>
-                <button className="btn">Prev</button>
+            <div className='flex justify-center mt-12 gap-4'>
+                <button onClick={handlePrev} className="btn">Prev</button>
                 {
-                    pages.map(page=>
-                        <button>
+                    pages.map(page =>
+                        <button
+                            className={`btn ${page === currentPage ? 'bg-[#435585] text-white' : ''}`}
+                            onClick={() => setCurrentPage(page)}>
                             {page}
                         </button>
                     )
                 }
-                <button className="btn">Next</button>
+                <button onClick={handleNext} className="btn">Next</button>
             </div>
         </div>
     );
