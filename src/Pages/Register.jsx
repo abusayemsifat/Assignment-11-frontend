@@ -158,7 +158,7 @@ const Register = () => {
                                 <label className="label">Password</label>
                                 <input name='password' type="password" className="input" placeholder="Password" />
 
-                                <button onClick={googleSignup} className="btn"><FcGoogle /></button>
+                                {/* <button onClick={googleSignup} className="btn"><FcGoogle /></button> */}
 
                                 <div><a className="link link-hover">Forgot password?</a></div>
                                 <div><span>Already have an account? </span><Link className='text-blue-500' to='/login'>Login</Link></div>

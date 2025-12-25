@@ -63,7 +63,7 @@ const Login = () => {
 
                                 <div><button onClick={handleForget} className="link link-hover">Forgot password?</button></div>
 
-                                <button onClick={googleSignin} className="btn"><FcGoogle /></button>
+                                {/* <button onClick={googleSignin} className="btn"><FcGoogle /></button> */}
 
                                 <div><span>Don't have an account? </span><Link to='/signup'>Register</Link></div>
                                 <button className="btn btn-neutral mt-4">Login</button>
