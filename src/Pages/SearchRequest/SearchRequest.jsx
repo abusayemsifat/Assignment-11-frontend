@@ -35,7 +35,7 @@ const SearchRequest = () => {
     }
     console.log(search)
     return (
-        <div className='flex flex-col items-center'>
+        <div className='flex flex-col items-center bg-red-50 h-screen'>
             <div>
                 <form onSubmit={handleSearch} action="" className='fieldset flex'>
                     <div>
@@ -75,13 +75,19 @@ const SearchRequest = () => {
                     <button className="btn mt-[18px]">Search</button>
                 </form>
             </div>
-            <div className='grid grid-cols-3 mb-64'>
+            <div className='grid grid-cols-3 my-24 gap-10'>
                 {
                     search.map(s =>
-                        <p className='text-6xl font-bold text-red-400'>{s.blood_group}</p>
+                        <div className='bg-red-200 rounded-xl p-5'>
+                            <h1 className='text-xl my-1'>Name: <span className='font-bold'>{s.recipient_name}</span></h1>
+                            <h1 className='text-xl my-1'>Blood Group: <span className='font-bold text-red-500'>{s.blood_group}</span></h1>
+                            <h1 className='text-xl my-1'>District: <span className='font-bold'>{s.recipient_district}</span></h1>
+                            <h1 className='text-xl my-1'>Upazila: <span className='font-bold'>{s.recipient_upazila}</span></h1>
+                        </div>
                     )
                 }
             </div>
+
         </div>
     );
 };

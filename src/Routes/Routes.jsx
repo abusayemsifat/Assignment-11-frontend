@@ -13,6 +13,7 @@ import MyRequest from "../Pages/Dashboard/My Request/MyRequest";
 import Donate from "../Pages/Donate/Donate";
 import PaymentSuccess from "../Pages/PaymentSuccess/PaymentSuccess";
 import SearchRequest from "../Pages/SearchRequest/SearchRequest";
+import Profile from "../Pages/Dashboard/Profile";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: 'my-request',
         element: <MyRequest></MyRequest>
+      },
+      {
+        path: 'profile',
+        element: <Profile></Profile>
       }
     ]
   }

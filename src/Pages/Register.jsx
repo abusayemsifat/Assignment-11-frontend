@@ -102,15 +102,15 @@ const Register = () => {
 
     console.log(user);
 
-    const googleSignup = () => {
-        handleGoogleSignin()
-            .then(result => {
-                const user = result.user
-                setUser(user)
-                Navigate(location.state)
-            })
-            .catch(err => console.log(err))
-    }
+    // const googleSignup = () => {
+    //     handleGoogleSignin()
+    //         .then(result => {
+    //             const user = result.user
+    //             setUser(user)
+    //             Navigate(location.state)
+    //         })
+    //         .catch(err => console.log(err))
+    // }
 
 
     return (
