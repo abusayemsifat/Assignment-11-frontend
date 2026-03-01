@@ -95,7 +95,7 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  // Logged-out: 4 routes
+  // Logged-out
   const publicLinks = [
     { to: '/',             label: 'Home' },
     { to: '/all-requests', label: 'Blood Requests' },
@@ -104,7 +104,7 @@ const Navbar = () => {
     { to: '/blog',         label: 'Blog' },
   ];
 
-  // Logged-in: 6 routes
+  // Logged-in
   const privateLinks = [
     { to: '/',             label: 'Home' },
     { to: '/all-requests', label: 'Blood Requests' },
