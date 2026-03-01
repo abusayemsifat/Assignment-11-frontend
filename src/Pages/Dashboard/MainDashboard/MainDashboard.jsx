@@ -56,34 +56,35 @@ const MainDashBoard = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Name</th>
-                                    <th>Hospital Name</th>
-                                    <th>Blood Group</th>
-                                    <th>Donation Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    myRequests.slice(0, 3).map((request, index) =>
-                                        <tr key={request._id}>
-                                            <th>{(index + 1)}</th>
-                                            <td>{request.recipient_name}</td>
-                                            <td>{request.hospital_name}</td>
-                                            <td>{request.blood_group}</td>
-                                            <td>{request.donation_status}</td>
-                                        </tr>
-                                    )
-                                }
-                            </tbody>
-                        </table>
+                    <>
+                        <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Name</th>
+                                        <th>Hospital Name</th>
+                                        <th>Blood Group</th>
+                                        <th>Donation Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        myRequests.slice(0, 3).map((request, index) =>
+                                            <tr key={request._id}>
+                                                <th>{(index + 1)}</th>
+                                                <td>{request.recipient_name}</td>
+                                                <td>{request.hospital_name}</td>
+                                                <td>{request.blood_group}</td>
+                                                <td>{request.donation_status}</td>
+                                            </tr>
+                                        )
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                         <Link to={'my-request'} className='mx-auto mt-10'><button className="btn btn-primary">View All</button></Link>
-                    </div>
-
+                    </>
                 )
             }
 

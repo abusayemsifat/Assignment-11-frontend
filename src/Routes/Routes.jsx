@@ -14,6 +14,7 @@ import Donate from "../Pages/Donate/Donate";
 import PaymentSuccess from "../Pages/PaymentSuccess/PaymentSuccess";
 import SearchRequest from "../Pages/SearchRequest/SearchRequest";
 import Profile from "../Pages/Dashboard/Profile";
+import AllRequests from "../Pages/AllRequests/AllRequests";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path:'/search',
         Component: SearchRequest
+      },
+      {
+        path:'/all-requests',
+        Component: AllRequests
       }
     ]
   },
