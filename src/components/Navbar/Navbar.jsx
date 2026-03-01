@@ -101,6 +101,7 @@ const Navbar = () => {
     { to: '/all-requests', label: 'Blood Requests' },
     { to: '/search',       label: 'Find Donors' },
     { to: '/donate',       label: 'Donate' },
+    { to: '/blog',         label: 'Blog' },
   ];
 
   // Logged-in: 6 routes

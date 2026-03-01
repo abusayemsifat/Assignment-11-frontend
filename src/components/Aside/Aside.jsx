@@ -1,135 +1,135 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
-    HomeIcon,
-    UserCircleIcon,
-    Cog6ToothIcon,
-    ArrowRightOnRectangleIcon,
+  HomeIcon,
+  UserCircleIcon,
+  ClipboardDocumentListIcon,
+  PlusCircleIcon,
+  UsersIcon,
+  Cog6ToothIcon,
+  ArrowRightOnRectangleIcon,
+  ChartBarIcon,
+  NewspaperIcon,
 } from "@heroicons/react/24/outline";
 import { useContext } from "react";
 import { AuthContext } from "../../Provider/AuthProvider";
 import { signOut } from "firebase/auth";
-import auth from "../../Firebase/firebase.config";
-
-const linkBase =
-    "flex items-center gap-3 p-3 rounded-lg transition text-sm font-medium";
+import auth from "../../firebase/firebase.config"; 
 
 const Aside = () => {
+  const { role, user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-    const { role } = useContext(AuthContext)
-    console.log('Current role:', role, typeof role);
+  const handleLogout = () => {
+    signOut(auth);
+    navigate('/login');
+  };
 
-    const handleLogout = () => {
-        signOut(auth)
-    }
+  // Active link style
+  const linkClass = ({ isActive }) =>
+    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold
+     transition-all duration-150 cursor-pointer
+     ${isActive
+       ? 'text-white'
+       : 'hover:text-white'
+     }`;
 
-    return (
-        <aside className="w-64 bg-gray-900 text-gray-200 min-h-screen p-5 flex flex-col">
+  const activeStyle = {
+    backgroundColor: '#C00707',
+    color: '#fff',
+  };
 
-            {/* Logo */}
-            <div className="text-2xl font-bold mb-10 text-white tracking-wide">
-                AdminPanel
-            </div>
+  const inactiveHover = {
+    backgroundColor: 'rgba(255,255,255,0.07)',
+  };
 
-            {/* Navigation */}
-            <nav className="flex flex-col gap-3">
-                <NavLink
-                    to="/dashboard"
-                    end
-                    className={({ isActive }) =>
-                        `${linkBase} ${isActive
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-gray-700"
-                        }`
-                    }
-                >
-                    <HomeIcon className="h-5 w-5" />
-                    Dashboard
-                </NavLink>
+  // Donor menu 
+  const donorLinks = [
+    { to: '/dashboard',            label: 'Overview',     icon: HomeIcon },
+    { to: '/dashboard/my-request', label: 'My Requests',  icon: ClipboardDocumentListIcon },
+    { to: '/dashboard/add-request',label: 'Add Request',  icon: PlusCircleIcon },
+    { to: '/dashboard/profile',    label: 'Profile',      icon: UserCircleIcon },
+    { to: '/dashboard/settings',   label: 'Settings',     icon: Cog6ToothIcon },
+  ];
 
-                {
-                    role == 'donor' && (
-                        <NavLink
-                            to="/dashboard/add-request"
-                            className={({ isActive }) =>
-                                `${linkBase} ${isActive
-                                    ? "bg-blue-600 text-white"
-                                    : "hover:bg-gray-700"
-                                }`
-                            }
-                        >
-                            <HomeIcon className="h-5 w-5" />
-                            Add Request
-                        </NavLink>
-                    )
-                }
+  // Admin menu 
+  const adminLinks = [
+    { to: '/dashboard',              label: 'Overview',       icon: HomeIcon },
+    { to: '/dashboard/all-users',    label: 'Manage Users',   icon: UsersIcon },
+    { to: '/dashboard/manage-items', label: 'Manage Requests',icon: ClipboardDocumentListIcon },
+    { to: '/dashboard/reports',      label: 'Reports',        icon: ChartBarIcon },
+    { to: '/dashboard/blog',         label: 'Blog',           icon: NewspaperIcon },
+    { to: '/dashboard/profile',      label: 'Profile',        icon: UserCircleIcon },
+    { to: '/dashboard/settings',     label: 'Settings',       icon: Cog6ToothIcon },
+  ];
 
-                {
-                    role == 'admin' && (
-                        <NavLink
-                            to="/dashboard/all-users"
-                            className={({ isActive }) =>
-                                `${linkBase} ${isActive
-                                    ? "bg-blue-600 text-white"
-                                    : "hover:bg-gray-700"
-                                }`
-                            }
-                        >
-                            <HomeIcon className="h-5 w-5" />
-                            All users
-                        </NavLink>
-                    )
-                }
+  const links = role === 'admin' ? adminLinks : donorLinks;
 
-                <NavLink
-                    to="/dashboard/my-request"
-                    className={({ isActive }) =>
-                        `${linkBase} ${isActive
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-gray-700"
-                        }`
-                    }
-                >
-                    <HomeIcon className="h-5 w-5" />
-                    My Request
-                </NavLink>
+  return (
+    <aside
+      className="w-64 min-h-screen flex flex-col p-5 shrink-0"
+      style={{ backgroundColor: '#0F0F0F', color: '#E5E5E5' }}
+    >
+      {/* Logo */}
+      <div className="mb-8">
+        <NavLink to="/" className="flex items-center gap-2">
+          <span className="text-lg">🩸</span>
+          <span className="font-['Sora'] font-bold text-lg">
+            <span style={{ color: '#C00707' }}>BLOOD</span>
+            <span style={{ color: '#FFB33F' }}>+</span>
+          </span>
+        </NavLink>
+        {user && (
+          <div className="mt-4 px-1">
+            <p className="text-xs font-semibold truncate" style={{ color: '#A0A0A0' }}>
+              {user.displayName || 'User'}
+            </p>
+            <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase"
+              style={{ backgroundColor: role === 'admin' ? '#134E8E' : 'rgba(192,7,7,0.3)', color: role === 'admin' ? '#90caff' : '#ff9999' }}>
+              {role || 'donor'}
+            </span>
+          </div>
+        )}
+      </div>
 
-                <NavLink
-                    to="/dashboard/profile"
-                    className={({ isActive }) =>
-                        `${linkBase} ${isActive
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-gray-700"
-                        }`
-                    }
-                >
-                    <UserCircleIcon className="h-5 w-5" />
-                    Profile
-                </NavLink>
+      {/* Nav */}
+      <nav className="flex flex-col gap-1 flex-1">
+        <p className="text-[10px] uppercase tracking-widest font-semibold mb-2 px-1"
+           style={{ color: '#555' }}>
+          Menu
+        </p>
 
-                {/* <NavLink
-                    to="/dashboard/settings"
-                    className={({ isActive }) =>
-                        `${linkBase} ${isActive
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-gray-700"
-                        }`
-                    }
-                >
-                    <Cog6ToothIcon className="h-5 w-5" />
-                    Settings
-                </NavLink> */}
-            </nav>
+        {links.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === '/dashboard'}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+               transition-all duration-150 cursor-pointer
+               ${isActive ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/10'}`
+            }
+            style={({ isActive }) => isActive ? { backgroundColor: '#C00707' } : {}}
+          >
+            <Icon className="h-4 w-4 shrink-0" />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
 
-            {/* Logout */}
-            <div className="mt-auto">
-                <button onClick={handleLogout} className="flex items-center gap-3 p-3 w-full rounded-lg text-left text-red-400 hover:bg-red-600 hover:text-white transition cursor-pointer">
-                    <ArrowRightOnRectangleIcon className="h-5 w-5" />
-                    Logout
-                </button>
-            </div>
-
-        </aside>
-    );
+      {/* Logout */}
+      <div className="mt-6 pt-4" style={{ borderTop: '1px solid #2E2E2E' }}>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-sm
+                     font-medium cursor-pointer transition-all duration-150
+                     text-red-400 hover:text-white hover:bg-red-700"
+        >
+          <ArrowRightOnRectangleIcon className="h-4 w-4 shrink-0" />
+          Logout
+        </button>
+      </div>
+    </aside>
+  );
 };
 
 export default Aside;

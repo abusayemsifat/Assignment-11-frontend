@@ -15,6 +15,8 @@ import PaymentSuccess from "../Pages/PaymentSuccess/PaymentSuccess";
 import SearchRequest from "../Pages/SearchRequest/SearchRequest";
 import Profile from "../Pages/Dashboard/Profile";
 import AllRequests from "../Pages/AllRequests/AllRequests";
+import Blog from '../Pages/Blog/Blog';
+import BlogDetails from '../Pages/Blog/BlogDetails';
 
 const router = createBrowserRouter([
   {
@@ -48,7 +50,13 @@ const router = createBrowserRouter([
       {
         path:'/all-requests',
         Component: AllRequests
-      }
+      },
+      { path: 'blog',
+        element: <Blog /> 
+      },
+      { path: 'blog/:id',
+        element: <BlogDetails />
+      },
     ]
   },
   {
