@@ -3,72 +3,118 @@ import React, { useContext, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import auth from '../Firebase/firebase.config';
 import { AuthContext } from '../Provider/AuthProvider';
-import { FcGoogle } from "react-icons/fc";
 import toast from 'react-hot-toast';
 
-const Login = () => {
+const FONT_DISPLAY = "'Sora', sans-serif";
+const FONT_BODY = "'Plus Jakarta Sans', sans-serif";
 
-    const { setUser, handleGoogleSignin } = useContext(AuthContext)
+const inputStyle = {
+    width: '100%', padding: '12px 14px', borderRadius: 10,
+    border: '1px solid var(--border)', backgroundColor: 'var(--bg-base)',
+    color: 'var(--text-primary)', fontSize: 14, fontFamily: FONT_BODY,
+    outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.18s',
+};
+
+const Login = () => {
+    const { setUser } = useContext(AuthContext);
     const location = useLocation();
-    console.log(location)
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setLoading(true);
         const email = e.target.email.value;
         const pass = e.target.password.value;
-
-
-
         signInWithEmailAndPassword(auth, email, pass)
             .then((userCredential) => {
-                const user = userCredential.user;
-                setUser(user)
-                toast.success('Login Successful!')
-                navigate(location.state ? location.state : '/')
+                setUser(userCredential.user);
+                toast.success('Login Successful!');
+                navigate(location.state ? location.state : '/');
             })
             .catch((error) => {
                 console.log(error);
+                toast.error('Invalid email or password');
+                setLoading(false);
             });
-    }
-
-    const googleSignin = () => {
-        handleGoogleSignin()
-            .then(result => {
-                const user = result.user
-                setUser(user)
-                toast.success('Login Successful!')
-                navigate(location.state ? location.state : '/')
-            })
-            .catch(err => console.log(err))
-    }
-
-    const handleForget = () => {
-        navigate(`/forget/${email}`)
-    }
+    };
 
     return (
-        <div>
-            <div className="hero bg-base-200 min-h-screen">
-                <div className="hero-content flex-col lg:flex-row-reverse">
-                    <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-                        <div className="card-body">
-                            <form onSubmit={handleSubmit} className="fieldset">
-                                <label className="label">Email</label>
-                                <input onChange={(e) => setEmail(e.target.value)} name='email' type="email" className="input" placeholder="Email" />
+        <div style={{
+            minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backgroundColor: 'var(--bg-base)', padding: '24px 16px',
+            fontFamily: FONT_BODY,
+        }}>
+            {/* Background decoration */}
+            <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+                <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle,rgba(192,7,7,0.08),transparent 70%)' }} />
+                <div style={{ position: 'absolute', bottom: '-15%', left: '-10%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle,rgba(19,78,142,0.07),transparent 70%)' }} />
+            </div>
 
-                                <label className="label">Password</label>
-                                <input name='password' type="password" className="input" placeholder="Password" />
+            <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 420 }}>
+                {/* Logo */}
+                <div style={{ textAlign: 'center', marginBottom: 32 }}>
+                    <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 800, fontSize: 28, marginBottom: 6 }}>
+                        <span style={{ background: 'linear-gradient(135deg,#C00707,#FF4400)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                            🩸 BloodLink
+                        </span>
+                    </div>
+                    <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Sign in to your account</p>
+                </div>
 
-                                <div><button onClick={handleForget} className="link link-hover">Forgot password?</button></div>
-
-                                {/* <button onClick={googleSignin} className="btn"><FcGoogle /></button> */}
-
-                                <div><span>Don't have an account? </span><Link to='/signup'>Register</Link></div>
-                                <button className="btn btn-neutral mt-4">Login</button>
-                            </form>
+                {/* Card */}
+                <div style={{
+                    backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border)',
+                    borderRadius: 20, padding: '32px 28px',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: 7, fontFamily: FONT_BODY, fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>
+                                Email Address
+                            </label>
+                            <input
+                                name="email" type="email" placeholder="you@example.com" required
+                                onChange={e => setEmail(e.target.value)}
+                                style={inputStyle}
+                                onFocus={e => e.target.style.borderColor = '#C00707'}
+                                onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                            />
                         </div>
+                        <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
+                                <label style={{ fontFamily: FONT_BODY, fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>Password</label>
+                                <Link to={`/forget/${email}`} style={{ fontSize: 12, color: '#C00707', textDecoration: 'none', fontFamily: FONT_BODY }}>Forgot password?</Link>
+                            </div>
+                            <input
+                                name="password" type="password" placeholder="••••••••" required
+                                style={inputStyle}
+                                onFocus={e => e.target.style.borderColor = '#C00707'}
+                                onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                            />
+                        </div>
+
+                        <button
+                            type="submit" disabled={loading}
+                            style={{
+                                padding: '13px', borderRadius: 12, border: 'none',
+                                background: loading ? 'var(--bg-muted)' : 'linear-gradient(135deg,#C00707,#FF4400)',
+                                color: loading ? 'var(--text-muted)' : '#fff',
+                                fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15,
+                                cursor: loading ? 'not-allowed' : 'pointer', transition: 'opacity 0.18s',
+                                marginTop: 4,
+                            }}
+                        >
+                            {loading ? 'Signing in...' : 'Sign In'}
+                        </button>
+                    </form>
+
+                    <div style={{ marginTop: 22, textAlign: 'center', fontSize: 13, color: 'var(--text-muted)', fontFamily: FONT_BODY }}>
+                        Don't have an account?{' '}
+                        <Link to="/signup" style={{ color: '#C00707', textDecoration: 'none', fontWeight: 600 }}>
+                            Register
+                        </Link>
                     </div>
                 </div>
             </div>
