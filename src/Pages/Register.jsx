@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { AuthContext } from '../Provider/AuthProvider';
 import { updateProfile } from 'firebase/auth';
@@ -21,6 +21,19 @@ const blur = e => e.target.style.borderColor = 'var(--border)';
 const Register = () => {
     const { registerWithEmailPassword, setUser } = useContext(AuthContext);
     const [upazilas, setUpazilas] = useState([]);
+    const cardRef = useRef(null);
+    useEffect(() => {
+        (async () => {
+            try {
+                const mod = await import('gsap');
+                const gsap = mod.gsap || mod.default;
+                gsap.fromTo(cardRef.current,
+                    { opacity: 0, y: 36, scale: 0.97 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'power3.out', delay: 0.05 }
+                );
+            } catch { if (cardRef.current) cardRef.current.style.opacity = '1'; }
+        })();
+    }, []);
     const [districts, setDistricts] = useState([]);
     const [district, setDistrict] = useState('');
     const [upazila, setUpazila] = useState('');
@@ -78,11 +91,13 @@ const Register = () => {
                 <div style={{ position: 'absolute', bottom: '-15%', left: '-10%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle,rgba(19,78,142,0.06),transparent 70%)' }} />
             </div>
 
-            <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 500 }}>
+            <div ref={cardRef} style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 500, opacity: 0 }}>
                 <div style={{ textAlign: 'center', marginBottom: 28 }}>
-                    <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 800, fontSize: 26, marginBottom: 6 }}>
-                        <span style={{ background: 'linear-gradient(135deg,#C00707,#FF4400)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                            🩸 BloodLink
+                    <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 800, fontSize: 26, marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 24 }}>🩸</span>
+                        <span>
+                            <span style={{ color: '#C00707' }}>BLOOD</span>
+                            <span style={{ color: 'var(--brand-amber, #FFB33F)' }}>+</span>
                         </span>
                     </div>
                     <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Create your donor account</p>

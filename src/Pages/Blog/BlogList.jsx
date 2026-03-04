@@ -1,6 +1,45 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import useAxios from '../../hooks/useAxios';
+import useScrollReveal from '../../hooks/useScrollReveal';
+
+const BLOG_CSS = `
+  @keyframes bl-fade-up {
+    from { opacity:0; transform:translateY(24px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes bl-badge {
+    from { opacity:0; transform:scale(0.8) translateY(-8px); }
+    to   { opacity:1; transform:scale(1) translateY(0); }
+  }
+  @keyframes bl-card-in {
+    from { opacity:0; transform:translateY(20px) scale(0.97); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+  }
+  .bl-hero-title { animation: bl-fade-up 0.6s ease 0.15s both; }
+  .bl-hero-sub   { animation: bl-fade-up 0.6s ease 0.3s  both; }
+  .bl-hero-input { animation: bl-fade-up 0.6s ease 0.44s both; }
+  .bl-cats       { animation: bl-fade-up 0.5s ease 0.55s both; }
+
+  .blog-card {
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1),
+                box-shadow 0.25s ease, border-color 0.25s ease !important;
+  }
+  .blog-card:hover {
+    transform: translateY(-7px) scale(1.02) !important;
+    box-shadow: 0 18px 44px rgba(0,0,0,0.2) !important;
+  }
+  .blog-card:hover img {
+    transform: scale(1.06);
+  }
+  .blog-card img {
+    transition: transform 0.4s ease !important;
+  }
+  .cat-chip {
+    transition: background 0.18s, color 0.18s, transform 0.18s cubic-bezier(.34,1.56,.64,1) !important;
+  }
+  .cat-chip:hover { transform: scale(1.08) !important; }
+`;
 
 const FD = "'Sora', sans-serif";
 const FB = "'Plus Jakarta Sans', sans-serif";
@@ -23,25 +62,16 @@ function BlogCard({ blog }) {
             to={`/blog/${blog._id}`}
             style={{ textDecoration: 'none', display: 'block' }}
         >
-            <article style={{
+            <article className="blog-card" style={{
                 backgroundColor: 'var(--bg-subtle)',
                 border: '1px solid var(--border)',
                 borderRadius: 16,
                 overflow: 'hidden',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                 cursor: 'pointer',
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
             }}
-                onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.18)';
-                }}
-                onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                }}
             >
                 {/* Image */}
                 <div style={{
@@ -121,6 +151,26 @@ export default function BlogList() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [activeCat, setActiveCat] = useState('All');
+    const gridRef = useRef(null);
+    const pageRef = useScrollReveal();
+
+    // GSAP stagger cards whenever filtered list changes
+    useEffect(() => {
+        if (loading) return;
+        (async () => {
+            try {
+                const mod  = await import('gsap');
+                const gsap = mod.gsap || mod.default;
+                const cards = gridRef.current?.querySelectorAll('.blog-card');
+                if (cards?.length) {
+                    gsap.fromTo(cards,
+                        { opacity:0, y:24, scale:0.96 },
+                        { opacity:1, y:0,  scale:1, duration:0.42, stagger:0.07, ease:'power3.out' }
+                    );
+                }
+            } catch {}
+        })();
+    }, [loading, activeCat, search]);
 
     useEffect(() => {
         axiosInstance.get('/blogs')
@@ -136,7 +186,8 @@ export default function BlogList() {
     });
 
     return (
-        <div style={{ fontFamily: FB, backgroundColor: 'var(--bg-base)', minHeight: '60vh' }}>
+        <div ref={pageRef} style={{ fontFamily: FB, backgroundColor: 'var(--bg-base)', minHeight: '60vh' }}>
+            <style>{BLOG_CSS}</style>
 
             {/* Hero banner */}
             <div style={{
@@ -144,13 +195,13 @@ export default function BlogList() {
                 padding: 'clamp(40px,8vw,80px) 24px',
                 textAlign: 'center',
             }}>
-                <h1 style={{
+                <h1 className="bl-hero-title" style={{
                     fontFamily: FD, fontWeight: 800, fontSize: 'clamp(26px,5vw,44px)',
                     color: '#fff', margin: '0 0 12px',
                 }}>
                     Blood+ Blog
                 </h1>
-                <p style={{ fontFamily: FB, fontSize: 15, color: 'rgba(255,255,255,0.75)', margin: '0 0 28px' }}>
+                <p className="bl-hero-sub" style={{ fontFamily: FB, fontSize: 15, color: 'rgba(255,255,255,0.75)', margin: '0 0 28px' }}>
                     Stories, guides and campaigns from the donor community
                 </p>
                 {/* Search */}
@@ -178,10 +229,11 @@ export default function BlogList() {
             <div style={{ maxWidth: 1200, margin: '0 auto', padding: '36px 20px' }}>
 
                 {/* Category filter */}
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 32 }}>
+                <div className="bl-cats" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 32 }}>
                     {CATS.map(cat => (
                         <button
                             key={cat}
+                            className="cat-chip"
                             onClick={() => setActiveCat(cat)}
                             style={{
                                 padding: '7px 16px', borderRadius: 10,
@@ -213,7 +265,7 @@ export default function BlogList() {
                         <p style={{ fontSize: 14 }}>Try a different search or category.</p>
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 20 }}>
+                    <div ref={gridRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 20 }}>
                         {filtered.map(b => <BlogCard key={b._id} blog={b} />)}
                     </div>
                 )}

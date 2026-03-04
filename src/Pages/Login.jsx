@@ -1,5 +1,5 @@
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import auth from '../Firebase/firebase.config';
 import { AuthContext } from '../Provider/AuthProvider';
@@ -20,6 +20,22 @@ const Login = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
+    const cardRef = useRef(null);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const mod = await import('gsap');
+                const gsap = mod.gsap || mod.default;
+                gsap.fromTo(cardRef.current,
+                    { opacity: 0, y: 36, scale: 0.97 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'power3.out', delay: 0.05 }
+                );
+            } catch {
+                if (cardRef.current) { cardRef.current.style.opacity = '1'; }
+            }
+        })();
+    }, []);
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = (e) => {
@@ -52,12 +68,14 @@ const Login = () => {
                 <div style={{ position: 'absolute', bottom: '-15%', left: '-10%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle,rgba(19,78,142,0.07),transparent 70%)' }} />
             </div>
 
-            <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 420 }}>
+            <div ref={cardRef} style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 420, opacity: 0 }}>
                 {/* Logo */}
                 <div style={{ textAlign: 'center', marginBottom: 32 }}>
-                    <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 800, fontSize: 28, marginBottom: 6 }}>
-                        <span style={{ background: 'linear-gradient(135deg,#C00707,#FF4400)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                            🩸 BloodLink
+                    <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 800, fontSize: 28, marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 26 }}>🩸</span>
+                        <span>
+                            <span style={{ color: '#C00707' }}>BLOOD</span>
+                            <span style={{ color: 'var(--brand-amber, #FFB33F)' }}>+</span>
                         </span>
                     </div>
                     <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Sign in to your account</p>

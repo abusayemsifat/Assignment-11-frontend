@@ -1,5 +1,7 @@
+// src/Pages/AllRequests/AllRequests.jsx
 import { useEffect, useState } from 'react';
 import useAxios from '../../hooks/useAxios';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
 const FONT_DISPLAY = "'Sora', sans-serif";
 const FONT_BODY    = "'Plus Jakarta Sans', sans-serif";
@@ -24,6 +26,7 @@ function SkeletonRow() {
 const ITEMS_PER_PAGE = 10;
 
 const AllRequests = () => {
+  const pageRef = useScrollReveal();
   const [allRequests, setAllRequests] = useState([]);
   const [loading, setLoading]         = useState(true);
   const [search, setSearch]           = useState('');
@@ -53,15 +56,15 @@ const AllRequests = () => {
   useEffect(() => setPage(1), [search, filterBlood]);
 
   return (
-    <div style={{ backgroundColor:'var(--bg-base)', minHeight:'100vh', fontFamily:FONT_BODY }}>
+    <div ref={pageRef} style={{ backgroundColor:'var(--bg-base)', minHeight:'100vh', fontFamily:FONT_BODY }}>
 
       {/* Header */}
       <section style={{ background:'linear-gradient(135deg,#C00707,#FF4400)', padding:'48px 24px 40px' }}>
         <div className="max-w-7xl mx-auto">
-          <h1 style={{ fontFamily:FONT_DISPLAY, fontWeight:800, fontSize:'clamp(1.75rem,4vw,2.75rem)', color:'#fff', margin:'0 0 8px' }}>
+          <h1 data-reveal style={{ fontFamily:FONT_DISPLAY, fontWeight:800, fontSize:'clamp(1.75rem,4vw,2.75rem)', color:'#fff', margin:'0 0 8px' }}>
             Blood Requests
           </h1>
-          <p style={{ color:'rgba(255,255,255,0.8)', fontFamily:FONT_BODY, margin:0 }}>
+          <p data-reveal data-reveal-delay="100" style={{ color:'rgba(255,255,255,0.8)', fontFamily:FONT_BODY, margin:0 }}>
             Find urgent blood requests across Bangladesh
           </p>
         </div>
