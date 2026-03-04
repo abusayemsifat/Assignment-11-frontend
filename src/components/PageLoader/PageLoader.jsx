@@ -1,17 +1,15 @@
-// PageLoader v2 — GSAP + Framer Motion ready
 import { useEffect, useRef, useState } from 'react';
 
 /**
- * PageLoader — full-screen intro shown on first app load.
- * Uses GSAP for blood-drop + text + progress bar reveal.
- * If GSAP isn't installed yet, falls back gracefully.
+ * PageLoader — a slim top-of-page loading bar shown on first app load.
+ * Does NOT hide page content — it sits above the page as a non-intrusive banner.
+ *
+ * Uses GSAP for animation (npm install gsap).
+ * Falls back to CSS if GSAP is not installed.
  */
 const PageLoader = ({ onComplete }) => {
+    const barRef       = useRef(null);
     const containerRef = useRef(null);
-    const dropRef = useRef(null);
-    const textRef = useRef(null);
-    const plusRef = useRef(null);
-    const barRef = useRef(null);
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
@@ -21,42 +19,43 @@ const PageLoader = ({ onComplete }) => {
                 const mod = await import('gsap');
                 gsap = mod.gsap || mod.default;
             } catch {
-                // GSAP not available — skip animation
-                setTimeout(() => { setVisible(false); onComplete?.(); }, 400);
+                // CSS fallback
+                if (barRef.current) {
+                    barRef.current.style.transition = 'width 1.2s cubic-bezier(.4,0,.2,1)';
+                    barRef.current.style.width = '100%';
+                }
+                setTimeout(() => {
+                    if (containerRef.current) {
+                        containerRef.current.style.transition = 'opacity 0.3s ease';
+                        containerRef.current.style.opacity = '0';
+                    }
+                    setTimeout(() => { setVisible(false); onComplete?.(); }, 320);
+                }, 1300);
                 return;
             }
 
-            if (!dropRef.current) return;
+            if (!barRef.current) return;
 
-            // Set initial hidden states
-            gsap.set(dropRef.current,  { scale: 0, opacity: 0, y: -30 });
-            gsap.set(textRef.current,  { opacity: 0, x: -18 });
-            gsap.set(plusRef.current,  { opacity: 0, scale: 0, rotate: -90 });
-            gsap.set(barRef.current,   { scaleX: 0, transformOrigin: 'left center' });
+            gsap.set(barRef.current, { width: '0%' });
 
-            const tl = gsap.timeline();
-
-            tl
-                .to(dropRef.current, {
-                    scale: 1, opacity: 1, y: 0,
-                    duration: 0.55, ease: 'back.out(1.7)',
-                })
-                .to(textRef.current, {
-                    opacity: 1, x: 0,
-                    duration: 0.38, ease: 'power3.out',
-                }, '-=0.15')
-                .to(plusRef.current, {
-                    opacity: 1, scale: 1, rotate: 0,
-                    duration: 0.32, ease: 'back.out(2.2)',
-                }, '-=0.18')
+            gsap.timeline()
+                // Bar sweeps to 85% quickly, then pauses waiting for app
                 .to(barRef.current, {
-                    scaleX: 1,
-                    duration: 0.85, ease: 'power2.inOut',
-                }, '-=0.1')
-                .to({}, { duration: 0.3 }) // brief hold
+                    width: '85%',
+                    duration: 0.9,
+                    ease: 'power2.out',
+                })
+                // Finish to 100%
+                .to(barRef.current, {
+                    width: '100%',
+                    duration: 0.35,
+                    ease: 'power1.inOut',
+                })
+                // Fade out container
                 .to(containerRef.current, {
                     opacity: 0,
-                    duration: 0.38, ease: 'power2.inOut',
+                    duration: 0.28,
+                    ease: 'power1.inOut',
                     onComplete: () => {
                         setVisible(false);
                         onComplete?.();
@@ -73,66 +72,24 @@ const PageLoader = ({ onComplete }) => {
         <div
             ref={containerRef}
             style={{
-                position: 'fixed', inset: 0, zIndex: 9999,
-                backgroundColor: '#080808',
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center',
-                gap: 24,
+                position: 'fixed',
+                top: 0, left: 0, right: 0,
+                zIndex: 9999,
+                height: 3,
+                backgroundColor: 'transparent',
+                pointerEvents: 'none',
             }}
         >
-            {/* Logo */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div ref={dropRef} style={{ fontSize: 50, lineHeight: 1, userSelect: 'none' }}>
-                    🩸
-                </div>
-                <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                    <span
-                        ref={textRef}
-                        style={{
-                            fontFamily: "'Sora', sans-serif",
-                            fontWeight: 800, fontSize: 38,
-                            color: '#C00707',
-                            letterSpacing: '-0.02em',
-                        }}
-                    >
-                        BLOOD
-                    </span>
-                    <span
-                        ref={plusRef}
-                        style={{
-                            fontFamily: "'Sora', sans-serif",
-                            fontWeight: 800, fontSize: 38,
-                            color: '#FFB33F',
-                        }}
-                    >
-                        +
-                    </span>
-                </div>
-            </div>
-
-            {/* Progress bar */}
-            <div style={{
-                width: 160, height: 3,
-                backgroundColor: 'rgba(255,255,255,0.07)',
-                borderRadius: 99, overflow: 'hidden',
-            }}>
-                <div
-                    ref={barRef}
-                    style={{
-                        height: '100%',
-                        background: 'linear-gradient(90deg, #C00707 0%, #FF4400 50%, #FFB33F 100%)',
-                        borderRadius: 99,
-                    }}
-                />
-            </div>
-
-            <div style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 12, color: 'rgba(255,255,255,0.3)',
-                letterSpacing: '0.1em', textTransform: 'uppercase',
-            }}>
-                Save Lives · Donate Blood
-            </div>
+            <div
+                ref={barRef}
+                style={{
+                    height: '100%',
+                    width: '0%',
+                    background: 'linear-gradient(90deg, #C00707 0%, #FF4400 60%, #FFB33F 100%)',
+                    borderRadius: '0 2px 2px 0',
+                    boxShadow: '0 0 8px rgba(192,7,7,0.6)',
+                }}
+            />
         </div>
     );
 };

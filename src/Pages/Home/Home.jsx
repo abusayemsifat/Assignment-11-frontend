@@ -1,4 +1,7 @@
+// src/Pages/Home/Home.jsx
 import { Link } from 'react-router';
+import { useContext } from 'react';
+import { AuthContext } from '../../Provider/AuthProvider';
 
 const bloodGroups = [
   { group: 'A+',  color: '#C00707', available: 12 },
@@ -40,7 +43,9 @@ const faqs = [
 const FONT_DISPLAY = "'Sora', sans-serif";
 const FONT_BODY    = "'Plus Jakarta Sans', sans-serif";
 
-const Home = () => (
+const Home = () => {
+  const { user } = useContext(AuthContext);
+  return (
   <div style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', fontFamily: FONT_BODY }}>
 
     {/* ── 1. HERO ─────────────────────────────────────────────── */}
@@ -87,13 +92,13 @@ const Home = () => (
         </p>
 
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 44 }}>
-          <Link to="/signup" style={{
+          <Link to={user ? "/dashboard" : "/signup"} style={{
             padding: '13px 30px', borderRadius: 12, background: '#fff', color: '#C00707',
             fontWeight: 700, fontSize: 14, textDecoration: 'none', fontFamily: FONT_DISPLAY, transition: 'all 0.15s',
           }}
             onMouseEnter={e => e.currentTarget.style.background = '#FFE0A0'}
             onMouseLeave={e => e.currentTarget.style.background = '#fff'}
-          >Join as a Donor</Link>
+          >{user ? 'Go to Dashboard' : 'Join as a Donor'}</Link>
           <Link to="/search" style={{
             padding: '13px 30px', borderRadius: 12,
             background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.4)',
@@ -289,6 +294,7 @@ const Home = () => (
     </section>
 
   </div>
-);
+  );
+};
 
 export default Home;

@@ -1,14 +1,15 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { useContext, useRef, useEffect } from "react";
 import { AuthContext } from "../../Provider/AuthProvider";
 import { signOut } from "firebase/auth";
 import auth from "../../Firebase/firebase.config";
 
-const FONT_DISPLAY = "'Sora', sans-serif";
-const FONT_BODY = "'Plus Jakarta Sans', sans-serif";
+const FONT_DISPLAY = "Inter, system-ui, -apple-system, sans-serif";
+const FONT_BODY    = "'Plus Jakarta Sans', sans-serif";
 
 const Icon = ({ path, size = 18 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d={path} />
     </svg>
 );
@@ -25,17 +26,10 @@ const ICONS = {
     manageReq: "M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2",
     logout:    "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
     close:     "M18 6 6 18 M6 6l12 12",
+    website:   "M19 12H5 M12 19l-7-7 7-7",
 };
 
-/*
- * WHY CSS CLASS INSTEAD OF onMouseEnter/Leave:
- * NavLink's `style` prop is a function evaluated by React on every render.
- * When onMouseEnter sets element.style.backgroundColor directly (inline DOM style),
- * it takes precedence over React's style prop and React never clears it because
- * the element is not re-rendered on mouse events. The fix: use a CSS class with
- * :hover and [aria-current="page"] selectors — NavLink sets aria-current="page"
- * automatically on the active link, so CSS can target both states cleanly.
- */
+/* Pure CSS for nav links — avoids the onMouseEnter inline-style permanence bug */
 const NAV_CSS = `
     .aside-link {
         display: flex;
@@ -49,19 +43,41 @@ const NAV_CSS = `
         font-weight: 500;
         color: var(--text-muted, #9ca3af);
         background-color: transparent;
-        transition: background-color 0.18s ease, color 0.18s ease;
+        transition: background-color 0.18s ease, color 0.18s ease, transform 0.15s ease;
     }
     .aside-link:hover {
         background-color: rgba(192,7,7,0.1);
         color: #C00707;
+        transform: translateX(3px);
     }
     .aside-link[aria-current="page"] {
         background-color: #C00707 !important;
         color: #ffffff !important;
+        transform: none !important;
     }
     .aside-link[aria-current="page"]:hover {
         background-color: #a80505 !important;
         color: #ffffff !important;
+    }
+    .aside-home-link {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 9px 14px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 13px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 500;
+        color: var(--text-faint, #6b7280);
+        background-color: transparent;
+        border: 1px solid var(--border, rgba(255,255,255,0.08));
+        transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    }
+    .aside-home-link:hover {
+        background-color: rgba(255,255,255,0.05);
+        color: var(--text-muted, #9ca3af);
+        border-color: rgba(255,255,255,0.18);
     }
     .aside-logout {
         display: flex;
@@ -77,11 +93,12 @@ const NAV_CSS = `
         font-family: 'Plus Jakarta Sans', sans-serif;
         font-size: 14px;
         font-weight: 500;
-        transition: background-color 0.18s ease;
+        transition: background-color 0.18s ease, transform 0.15s ease;
         text-align: left;
     }
     .aside-logout:hover {
         background-color: rgba(248,113,113,0.12);
+        transform: translateX(3px);
     }
 `;
 
@@ -105,12 +122,54 @@ const NavItem = ({ to, end, icon, label, onClick }) => (
     </NavLink>
 );
 
+/* Animates nav items in on mount using GSAP if available */
+const AnimatedNav = ({ children }) => {
+    const ref = useRef(null);
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const items = el.querySelectorAll('.aside-link, .aside-section-label');
+        const run = async () => {
+            try {
+                const mod = await import('gsap');
+                const gsap = mod.gsap || mod.default;
+                gsap.fromTo(items,
+                    { opacity: 0, x: -14 },
+                    { opacity: 1, x: 0, duration: 0.35, stagger: 0.045, ease: 'power2.out', delay: 0.1 }
+                );
+            } catch {
+                // no gsap - items just appear
+            }
+        };
+        run();
+    }, []);
+    return <nav ref={ref} style={{ display: "flex", flexDirection: "column", gap: 1, flex: 1 }}>{children}</nav>;
+};
+
 const Aside = ({ onClose }) => {
     const { role } = useContext(AuthContext);
     const navigate = useNavigate();
+    const footerRef = useRef(null);
 
     const handleLogout = () => signOut(auth).then(() => navigate("/"));
     const close = onClose || (() => {});
+
+    // Animate footer buttons in
+    useEffect(() => {
+        const el = footerRef.current;
+        if (!el) return;
+        const run = async () => {
+            try {
+                const mod = await import('gsap');
+                const gsap = mod.gsap || mod.default;
+                gsap.fromTo(el.children,
+                    { opacity: 0, y: 8 },
+                    { opacity: 1, y: 0, duration: 0.3, stagger: 0.08, ease: 'power2.out', delay: 0.4 }
+                );
+            } catch {}
+        };
+        run();
+    }, []);
 
     return (
         <>
@@ -124,7 +183,7 @@ const Aside = ({ onClose }) => {
                 overflowY: "auto",
             }}>
 
-                {/* ── Logo (matches Navbar: 🩸 BLOOD+) ── */}
+                {/* ── Logo ── */}
                 <div style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     padding: "22px 6px 18px",
@@ -132,7 +191,8 @@ const Aside = ({ onClose }) => {
                     marginBottom: 6,
                 }}>
                     <div style={{
-                        fontFamily: FONT_DISPLAY, fontWeight: 800, fontSize: 19,
+                        fontFamily: FONT_DISPLAY,
+                        fontWeight: 800, fontSize: 19,
                         display: "flex", alignItems: "center", gap: 8,
                     }}>
                         <span style={{ fontSize: 22 }}>🩸</span>
@@ -147,15 +207,15 @@ const Aside = ({ onClose }) => {
                             backgroundColor: "rgba(255,255,255,0.07)", cursor: "pointer",
                             color: "var(--text-muted, #9ca3af)",
                             display: "flex", alignItems: "center", justifyContent: "center",
+                            transition: "background-color 0.15s",
                         }}>
                             <Icon path={ICONS.close} size={15} />
                         </button>
                     )}
                 </div>
 
-                {/* ── Navigation ── */}
-                <nav style={{ display: "flex", flexDirection: "column", gap: 1, flex: 1 }}>
-
+                {/* ── Navigation (GSAP stagger animated) ── */}
+                <AnimatedNav>
                     <SectionLabel label="Overview" />
                     <NavItem to="/dashboard" end icon={ICONS.home} label="Dashboard" onClick={close} />
 
@@ -170,25 +230,29 @@ const Aside = ({ onClose }) => {
                     {role === "admin" && (
                         <>
                             <SectionLabel label="Management" />
-                            <NavItem to="/dashboard/all-users"       icon={ICONS.users}     label="All Users"        onClick={close} />
-                            <NavItem to="/dashboard/manage-requests" icon={ICONS.manageReq} label="Manage Requests"  onClick={close} />
-                            <NavItem to="/dashboard/reports"         icon={ICONS.chart}     label="Reports"          onClick={close} />
-                            <NavItem to="/dashboard/blog"            icon={ICONS.blog}      label="Blog"             onClick={close} />
+                            <NavItem to="/dashboard/all-users"       icon={ICONS.users}     label="All Users"       onClick={close} />
+                            <NavItem to="/dashboard/manage-requests" icon={ICONS.manageReq} label="Manage Requests" onClick={close} />
+                            <NavItem to="/dashboard/reports"         icon={ICONS.chart}     label="Reports"         onClick={close} />
+                            <NavItem to="/dashboard/blog"            icon={ICONS.blog}      label="Blog"            onClick={close} />
                         </>
                     )}
 
                     <SectionLabel label="Account" />
                     <NavItem to="/dashboard/profile"  icon={ICONS.profile}  label="Profile"  onClick={close} />
                     <NavItem to="/dashboard/settings" icon={ICONS.settings} label="Settings" onClick={close} />
+                </AnimatedNav>
 
-                </nav>
-
-                {/* ── Logout ── */}
-                <div style={{
+                {/* ── Footer: Home + Logout ── */}
+                <div ref={footerRef} style={{
                     padding: "12px 0 20px",
                     borderTop: "1px solid var(--border, rgba(255,255,255,0.08))",
                     marginTop: 8,
+                    display: "flex", flexDirection: "column", gap: 4,
                 }}>
+                    <Link to="/" className="aside-home-link">
+                        <Icon path={ICONS.website} size={15} />
+                        Back to Website
+                    </Link>
                     <button onClick={handleLogout} className="aside-logout">
                         <Icon path={ICONS.logout} size={17} />
                         Logout

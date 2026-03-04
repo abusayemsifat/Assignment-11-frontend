@@ -2,11 +2,9 @@ import { useRef, useEffect } from "react";
 import { useLocation } from "react-router";
 
 /**
- * RouteTransition - animates page content on every route change.
- * Uses GSAP (npm install gsap) for fade + upward drift.
+ * RouteTransition — animates page content on every route change.
+ * Uses GSAP (npm install gsap) for a smooth fade + upward drift.
  * Falls back to CSS transitions if GSAP is not installed.
- *
- * Usage: wrap <Outlet /> with this component.
  */
 const RouteTransition = ({ children }) => {
     const location = useLocation();
@@ -28,24 +26,34 @@ const AnimatedPage = ({ children }) => {
             try {
                 const mod = await import("gsap");
                 const gsap = mod.gsap || mod.default;
+                // Fade + lift from below — snappy, not sluggish
                 gsap.fromTo(
                     el,
-                    { opacity: 0, y: 10 },
-                    { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
+                    { opacity: 0, y: 16, scale: 0.995 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.38, ease: "power3.out" }
                 );
             } catch {
+                // CSS fallback
                 el.style.opacity = "0";
-                el.style.transform = "translateY(10px)";
-                el.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+                el.style.transform = "translateY(14px)";
+                el.style.transition = "opacity 0.32s ease, transform 0.32s ease";
                 requestAnimationFrame(() => requestAnimationFrame(() => {
-                    if (el) { el.style.opacity = "1"; el.style.transform = "translateY(0)"; }
+                    if (el) {
+                        el.style.opacity = "1";
+                        el.style.transform = "translateY(0)";
+                    }
                 }));
             }
         };
+
         run();
     }, []);
 
-    return <div ref={ref}>{children}</div>;
+    return (
+        <div ref={ref} style={{ willChange: "opacity, transform" }}>
+            {children}
+        </div>
+    );
 };
 
 export default RouteTransition;

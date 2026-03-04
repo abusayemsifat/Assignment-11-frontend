@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router';
+import { Outlet, Link } from 'react-router';
 import Aside from '../components/Aside/Aside';
+import RouteTransition from '../components/RouteTransition/RouteTransition';
 
 const DashboardLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,7 +20,7 @@ const DashboardLayout = () => {
                 />
             )}
 
-            {/* Sidebar - desktop always visible, mobile slides in */}
+            {/* Desktop sidebar - always visible */}
             <aside style={{
                 width: 260, flexShrink: 0,
                 position: 'sticky', top: 0,
@@ -46,39 +47,56 @@ const DashboardLayout = () => {
                 {/* Mobile top bar */}
                 <header className="dash-topbar" style={{
                     alignItems: 'center', gap: 12,
-                    padding: '14px 16px',
+                    padding: '12px 16px',
                     backgroundColor: 'var(--bg-subtle)',
                     borderBottom: '1px solid var(--border)',
                     position: 'sticky', top: 0, zIndex: 30,
                 }}>
+                    {/* Hamburger */}
                     <button
                         onClick={() => setSidebarOpen(true)}
                         style={{
-                            width: 40, height: 40, display: 'flex', alignItems: 'center',
+                            width: 38, height: 38, display: 'flex', alignItems: 'center',
                             justifyContent: 'center', border: 'none', borderRadius: 10,
                             backgroundColor: 'var(--bg-base)', cursor: 'pointer',
                             color: 'var(--text-primary)', flexShrink: 0,
                         }}
                     >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <line x1="3" y1="6" x2="21" y2="6" />
                             <line x1="3" y1="12" x2="21" y2="12" />
                             <line x1="3" y1="18" x2="21" y2="18" />
                         </svg>
                     </button>
-                    <span style={{
-                        fontFamily: "'Sora', sans-serif",
-                        fontWeight: 800, fontSize: 18,
-                        background: 'linear-gradient(135deg,#C00707,#FF4400)',
-                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                    {/* Logo */}
+                    <div style={{
+                        fontFamily: "Inter, system-ui, -apple-system, sans-serif",
+                        fontWeight: 800, fontSize: 17,
+                        display: 'flex', alignItems: 'baseline', flex: 1,
                     }}>
-                        🩸 BloodLink
-                    </span>
+                        <span style={{ marginRight: 6 }}>🩸</span>
+                        <span style={{ color: '#C00707' }}>BLOOD</span>
+                        <span style={{ color: 'var(--brand-amber, #FFB33F)' }}>+</span>
+                    </div>
+                    {/* Home button - mobile */}
+                    <Link to="/" style={{
+                        width: 38, height: 38, display: 'flex', alignItems: 'center',
+                        justifyContent: 'center', borderRadius: 10, flexShrink: 0,
+                        backgroundColor: 'var(--bg-base)', border: '1px solid var(--border)',
+                        color: 'var(--text-muted)', textDecoration: 'none',
+                    }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                    </Link>
                 </header>
 
-                <div style={{ padding: '28px 24px', flex: 1 }} className="dash-content-pad">
-                    <Outlet />
-                </div>
+                <RouteTransition>
+                    <div style={{ padding: '28px 24px', flex: 1 }} className="dash-content-pad">
+                        <Outlet />
+                    </div>
+                </RouteTransition>
             </div>
 
             <style>{`

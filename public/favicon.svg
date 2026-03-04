@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9B0000"/>
+      <stop offset="100%" stop-color="#C00707"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- Blood drop shape (white) -->
+  <path d="M32 10 C32 10 18 26 18 36 C18 44.8 24.3 50 32 50 C39.7 50 46 44.8 46 36 C46 26 32 10 32 10Z" fill="white" opacity="0.95"/>
+  <!-- Plus sign (red) -->
+  <rect x="28" y="31" width="8" height="2.5" fill="#C00707" rx="1.25"/>
+  <rect x="30.75" y="28.25" width="2.5" height="8" fill="#C00707" rx="1.25"/>
+</svg>

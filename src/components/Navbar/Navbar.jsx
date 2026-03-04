@@ -1,3 +1,4 @@
+// src/components/Navbar/Navbar.jsx
 import { useContext, useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { signOut } from 'firebase/auth';
@@ -95,16 +96,15 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  // Logged-out
+  // Logged-out: 4 routes
   const publicLinks = [
     { to: '/',             label: 'Home' },
     { to: '/all-requests', label: 'Blood Requests' },
     { to: '/search',       label: 'Find Donors' },
     { to: '/donate',       label: 'Donate' },
-    { to: '/blog',         label: 'Blog' },
   ];
 
-  // Logged-in
+  // Logged-in: 6 routes
   const privateLinks = [
     { to: '/',             label: 'Home' },
     { to: '/all-requests', label: 'Blood Requests' },
@@ -141,7 +141,7 @@ const Navbar = () => {
           {/* ── Logo ─────────────────────────────────────────── */}
           <Link to="/" className="flex items-center gap-2 shrink-0">
             <span className="text-xl">🩸</span>
-            <span className="font-['Sora'] font-bold text-xl tracking-tight">
+            <span className="font-bold text-xl tracking-tight" style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif" }}>
               <span style={{ color: '#C00707' }}>BLOOD</span>
               <span style={{ color: dark ? '#FFB33F' : '#134E8E' }}>+</span>
             </span>
