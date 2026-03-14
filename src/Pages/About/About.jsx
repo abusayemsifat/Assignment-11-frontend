@@ -20,12 +20,12 @@ const CSS = `
   .ab-btns   { animation: ab-fade-up 0.6s ease 0.4s  both; }
 
   /* Unified card hover — same feel across all cards */
-  .val-card, .milestone-card, .team-card {
+  .val-card, .team-card {
     transition: transform 0.22s ease,
                 box-shadow 0.22s ease,
                 border-color 0.22s ease !important;
   }
-  .val-card:hover, .milestone-card:hover, .team-card:hover {
+  .val-card:hover, .team-card:hover {
     transform: translateY(-4px) !important;
     border-color: rgba(192,7,7,0.28) !important;
     box-shadow: 0 8px 24px rgba(192,7,7,0.11), 0 2px 8px rgba(0,0,0,0.06) !important;
@@ -50,18 +50,10 @@ const team = [
   { name: 'Sabrina Khanam',     role: 'Community Manager',    avatar: '👩‍🤝‍👩', bio: 'Built the donor community from 0 to 10,000+. Manages volunteer programs across Bangladesh.' },
 ];
 
-const milestones = [
-  { year: '2018', event: 'Founded after a critical blood shortage incident at Dhaka Medical College Hospital.' },
-  { year: '2019', event: 'Launched beta with 500 donors. First life saved within 48 hours of going live.' },
-  { year: '2020', event: 'Expanded to all 8 divisions. Processed 1,000+ requests during COVID-19 crisis.' },
-  { year: '2022', event: 'Reached 5,000 registered donors. Partnered with 20 hospitals nationwide.' },
-  { year: '2024', event: '10,000+ donors. 3,500+ lives saved. 64 districts covered.' },
-];
 
 const About = () => {
   const valRef     = useScrollReveal();
   const teamRef    = useScrollReveal();
-  const mileRef    = useScrollReveal();
   const statsRef   = useScrollReveal();
   const ctaRef     = useScrollReveal();
   const missionRef = useScrollReveal();
@@ -164,29 +156,6 @@ const About = () => {
                 <div style={{ width: 60, height: 60, borderRadius: 16, backgroundColor: `${v.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, margin: '0 auto 16px', border: `1px solid ${v.color}30` }}>{v.icon}</div>
                 <h3 style={{ fontFamily: FD, fontWeight: 700, fontSize: 16, color: v.color, margin: '0 0 10px' }}>{v.title}</h3>
                 <p style={{ fontSize: 13, lineHeight: 1.72, color: 'var(--text-muted)', margin: 0, fontFamily: FB }}>{v.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── TIMELINE ── */}
-      <section ref={mileRef} style={{ backgroundColor: 'var(--bg-base)', padding: '80px 24px' }}>
-        <div style={{ maxWidth: 700, margin: '0 auto' }}>
-          <div data-reveal style={{ textAlign: 'center', marginBottom: 52 }}>
-            <h2 style={{ fontFamily: FD, fontWeight: 800, fontSize: 'clamp(1.6rem,3vw,2.4rem)', color: 'var(--text-primary)', margin: '0 0 10px' }}>Our Journey</h2>
-            <p style={{ color: 'var(--text-muted)', fontFamily: FB }}>From a single incident to a nationwide movement</p>
-          </div>
-          <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', left: 20, top: 0, bottom: 0, width: 2, backgroundColor: 'var(--border)' }} />
-            {milestones.map((m, i) => (
-              <div key={i} data-reveal data-reveal-delay={`${i * 80}`}
-                style={{ display: 'flex', gap: 24, marginBottom: 28, paddingLeft: 52, position: 'relative' }}>
-                <div style={{ position: 'absolute', left: 11, top: 14, width: 20, height: 20, borderRadius: '50%', backgroundColor: '#C00707', border: '3px solid var(--bg-base)', boxShadow: '0 0 0 3px rgba(192,7,7,0.2)', zIndex: 1, flexShrink: 0 }} />
-                <div className="milestone-card" style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border)', borderRadius: 14, padding: '16px 20px', flex: 1 }}>
-                  <span style={{ fontFamily: FD, fontWeight: 800, fontSize: 13, color: '#C00707', display: 'block', marginBottom: 6 }}>{m.year}</span>
-                  <p style={{ fontSize: 13, lineHeight: 1.7, color: 'var(--text-muted)', margin: 0, fontFamily: FB }}>{m.event}</p>
-                </div>
               </div>
             ))}
           </div>
