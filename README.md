@@ -4,9 +4,9 @@
 
 **A full-stack blood donation platform connecting donors with patients in urgent need — across all 64 districts of Bangladesh.**
 
-**[🌐 Live Site](https://assignment-11-abusayemsifat.pages.dev) &nbsp;·&nbsp; [⚙️ Backend API](https://backend-11-cyan.vercel.app) &nbsp;·&nbsp; [💻 Frontend Repo](https://github.com/abusayemsifat/assignment-11-client)**
+**[🌐 Live Site](https://assignment-11-abusayemsifat.pages.dev) &nbsp;·&nbsp; [⚙️ Backend API](https://backend-11-cyan.vercel.app) &nbsp;·&nbsp; [🗄️ Backend Repo](https://github.com/abusayemsifat/Assignment-11-backend)**
 
-![React](https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=black) ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white) ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black) ![Stripe](https://img.shields.io/badge/Stripe-635BFF?style=flat-square&logo=stripe&logoColor=white)
+<img src="https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=black" /> <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" /> <img src="https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white" /> <img src="https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black" /> <img src="https://img.shields.io/badge/Stripe-635BFF?style=flat-square&logo=stripe&logoColor=white" />
 
 </div>
 
