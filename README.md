@@ -81,12 +81,12 @@ Every year, thousands of people in Bangladesh die because they cannot find a com
 
 ```bash
 # Frontend
-git clone https://github.com/abusayemsifat/Assignment-11-frontend.git
+git clone https://github.com/your-username/bloodlink-frontend.git
 cd bloodlink-frontend
 npm install
 
 # Backend
-git clone https://github.com/abusayemsifat/Assignment-11-backend.git
+git clone https://github.com/your-username/bloodlink-backend.git
 cd bloodlink-backend
 npm install
 ```
@@ -212,8 +212,8 @@ src/
 
 | Role | Email | Password |
 |------|-------|----------|
-| Donor | `fahim@gmail.com` | `Abc123` |
-| Admin | `admin@gmail.com` | `Abc123` |
+| Donor | `donor@bloodlink.com` | `Demo@1234` |
+| Admin | `admin@bloodlink.com` | `Admin@1234` |
 
 ---
 
