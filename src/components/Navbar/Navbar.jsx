@@ -102,25 +102,28 @@ const Navbar = () => {
     { to: '/all-requests', label: 'Blood Requests' },
     { to: '/search',       label: 'Find Donors' },
     { to: '/donate',       label: 'Donate' },
+    { to: '/about',        label: 'About' },
+    { to: '/contact',      label: 'Contact' },
   ];
 
-  // Logged-in: 6 routes
+  // Logged-in: 6 routes (Dashboard lives in the profile dropdown)
   const privateLinks = [
     { to: '/',             label: 'Home' },
     { to: '/all-requests', label: 'Blood Requests' },
     { to: '/search',       label: 'Find Donors' },
     { to: '/donate',       label: 'Donate' },
-    { to: '/dashboard',    label: 'Dashboard' },
     { to: '/blog',         label: 'Blog' },
+    { to: '/about',        label: 'About' },
+    { to: '/contact',      label: 'Contact' },
   ];
 
   const navLinks = user ? privateLinks : publicLinks;
 
   // Profile dropdown items
   const profileMenu = [
+    { label: '🏠 Dashboard',     path: '/dashboard' },
     { label: '👤 My Profile',   path: '/dashboard/profile' },
     { label: '🩸 My Requests',  path: '/dashboard/my-request' },
-    { label: '⚙️ Settings',     path: '/dashboard/settings' },
     { divider: true },
     { label: '🚪 Logout',       danger: true, onClick: logout },
   ];
@@ -141,9 +144,9 @@ const Navbar = () => {
           {/* ── Logo ─────────────────────────────────────────── */}
           <Link to="/" className="flex items-center gap-2 shrink-0">
             <span className="text-xl">🩸</span>
-            <span className="font-bold text-xl tracking-tight" style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif" }}>
+            <span className="font-bold text-xl tracking-tight" style={{ fontFamily: "'Sora', sans-serif" }}>
               <span style={{ color: '#C00707' }}>BLOOD</span>
-              <span style={{ color: dark ? '#FFB33F' : '#134E8E' }}>+</span>
+              <span style={{ color: dark ? '#FFB33F' : '#134E8E' }}>LINK</span>
             </span>
           </Link>
 

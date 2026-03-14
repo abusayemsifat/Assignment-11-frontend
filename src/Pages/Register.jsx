@@ -97,7 +97,7 @@ const Register = () => {
                         <span style={{ fontSize: 24 }}>🩸</span>
                         <span>
                             <span style={{ color: '#C00707' }}>BLOOD</span>
-                            <span style={{ color: 'var(--brand-amber, #FFB33F)' }}>+</span>
+                            <span style={{ color: '#134E8E' }}>LINK</span>
                         </span>
                     </div>
                     <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Create your donor account</p>

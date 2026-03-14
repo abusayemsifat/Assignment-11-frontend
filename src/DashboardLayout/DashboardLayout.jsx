@@ -76,7 +76,7 @@ const DashboardLayout = () => {
                     }}>
                         <span style={{ marginRight: 6 }}>🩸</span>
                         <span style={{ color: '#C00707' }}>BLOOD</span>
-                        <span style={{ color: 'var(--brand-amber, #FFB33F)' }}>+</span>
+                        <span style={{ color: '#134E8E' }}>LINK</span>
                     </div>
                     {/* Home button - mobile */}
                     <Link to="/" style={{

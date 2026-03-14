@@ -12,6 +12,10 @@ const AllUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [sortKey, setSortKey] = useState('name');
+    const [sortDir, setSortDir] = useState('asc');
+    const [page, setPage] = useState(1);
+    const PER = 10;
 
     const fetchUsers = () => {
         setLoading(true);
@@ -25,10 +29,23 @@ const AllUsers = () => {
             .then(() => fetchUsers());
     };
 
-    const filtered = users.filter(u =>
-        u.name?.toLowerCase().includes(search.toLowerCase()) ||
-        u.email?.toLowerCase().includes(search.toLowerCase())
-    );
+    const filtered = users
+        .filter(u =>
+            u.name?.toLowerCase().includes(search.toLowerCase()) ||
+            u.email?.toLowerCase().includes(search.toLowerCase())
+        )
+        .sort((a, b) => {
+            const av = (a[sortKey] || '').toLowerCase();
+            const bv = (b[sortKey] || '').toLowerCase();
+            return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+        });
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PER));
+    const paginated  = filtered.slice((page - 1) * PER, page * PER);
+
+    const handleSort = (key) => {
+        if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+        else { setSortKey(key); setSortDir('asc'); }
+    };
 
     return (
         <div style={{ fontFamily: FONT_BODY }}>
@@ -55,14 +72,28 @@ const AllUsers = () => {
                     <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 520 }}>
                         <thead>
                             <tr style={{ backgroundColor: 'rgba(192,7,7,0.06)' }}>
-                                {['User','Email','Blood','District','Role','Status','Action'].map(h => (
-                                    <th key={h} style={{
-                                        padding: '12px 16px', textAlign: 'left',
-                                        fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 11,
-                                        textTransform: 'uppercase', letterSpacing: '0.07em',
-                                        color: 'var(--text-muted)', borderBottom: '1px solid var(--border)',
-                                        whiteSpace: 'nowrap',
-                                    }}>{h}</th>
+                                {[
+                                    { label:'User', key:'name' },
+                                    { label:'Email', key:'email' },
+                                    { label:'Blood', key:null },
+                                    { label:'District', key:'district' },
+                                    { label:'Role', key:'role' },
+                                    { label:'Status', key:'status' },
+                                    { label:'Action', key:null },
+                                ].map(({ label, key }) => (
+                                    <th key={label} onClick={() => key && handleSort(key)}
+                                        style={{
+                                            padding: '12px 16px', textAlign: 'left',
+                                            fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 11,
+                                            textTransform: 'uppercase', letterSpacing: '0.07em',
+                                            color: sortKey === key ? '#C00707' : 'var(--text-muted)',
+                                            borderBottom: '1px solid var(--border)',
+                                            whiteSpace: 'nowrap',
+                                            cursor: key ? 'pointer' : 'default',
+                                            userSelect: 'none',
+                                        }}>
+                                        {label} {key && sortKey === key ? (sortDir === 'asc' ? '↑' : '↓') : (key ? '↕' : '')}
+                                    </th>
                                 ))}
                             </tr>
                         </thead>
@@ -85,7 +116,7 @@ const AllUsers = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                filtered.map(u => {
+                                paginated.map(u => {
                                     const rb = roleBadge[u.role] || roleBadge.donor;
                                     const sb = statusBadge[u.status] || statusBadge.active;
                                     return (
@@ -150,6 +181,18 @@ const AllUsers = () => {
                     </table>
                 </div>
             </div>
+            {!loading && totalPages > 1 && (
+                <div style={{ display:'flex', justifyContent:'center', gap:8, marginTop:20, flexWrap:'wrap' }}>
+                    <button onClick={() => setPage(p => Math.max(1,p-1))} disabled={page===1}
+                        style={{ padding:'7px 14px', borderRadius:9, border:'1px solid var(--border)', backgroundColor:'var(--bg-subtle)', color:'var(--text-muted)', fontSize:12, fontFamily:FONT_DISPLAY, cursor:'pointer', opacity:page===1?0.4:1 }}>← Prev</button>
+                    {[...Array(totalPages)].map((_,i) => (
+                        <button key={i} onClick={() => setPage(i+1)}
+                            style={{ width:34, height:34, borderRadius:9, border:`1px solid ${page===i+1?'#C00707':'var(--border)'}`, backgroundColor:page===i+1?'#C00707':'var(--bg-subtle)', color:page===i+1?'#fff':'var(--text-muted)', fontSize:12, fontFamily:FONT_DISPLAY, cursor:'pointer' }}>{i+1}</button>
+                    ))}
+                    <button onClick={() => setPage(p => Math.min(totalPages,p+1))} disabled={page===totalPages}
+                        style={{ padding:'7px 14px', borderRadius:9, border:'1px solid var(--border)', backgroundColor:'var(--bg-subtle)', color:'var(--text-muted)', fontSize:12, fontFamily:FONT_DISPLAY, cursor:'pointer', opacity:page===totalPages?0.4:1 }}>Next →</button>
+                </div>
+            )}
             <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}`}</style>
         </div>
     );

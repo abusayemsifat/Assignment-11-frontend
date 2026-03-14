@@ -199,7 +199,7 @@ export default function BlogList() {
                     fontFamily: FD, fontWeight: 800, fontSize: 'clamp(26px,5vw,44px)',
                     color: '#fff', margin: '0 0 12px',
                 }}>
-                    Blood+ Blog
+                    BloodLink Blog
                 </h1>
                 <p className="bl-hero-sub" style={{ fontFamily: FB, fontSize: 15, color: 'rgba(255,255,255,0.75)', margin: '0 0 28px' }}>
                     Stories, guides and campaigns from the donor community

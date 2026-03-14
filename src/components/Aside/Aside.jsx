@@ -198,7 +198,7 @@ const Aside = ({ onClose }) => {
                         <span style={{ fontSize: 22 }}>🩸</span>
                         <span>
                             <span style={{ color: "#C00707" }}>BLOOD</span>
-                            <span style={{ color: "var(--brand-amber, #FFB33F)" }}>+</span>
+                            <span style={{ color: "var(--brand-navy, #134E8E)" }}>LINK</span>
                         </span>
                     </div>
                     {onClose && (

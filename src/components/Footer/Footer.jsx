@@ -14,7 +14,7 @@ const Footer = () => {
               <span className="text-xl">🩸</span>
               <span className="font-['Sora'] font-bold text-xl">
                 <span style={{ color: '#C00707' }}>BLOOD</span>
-                <span style={{ color: '#134E8E' }}>+</span>
+                <span style={{ color: '#134E8E' }}>LINK</span>
               </span>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
@@ -36,6 +36,8 @@ const Footer = () => {
                 { to: '/search',       label: 'Find Donors' },
                 { to: '/donate',       label: 'Donate Blood' },
                 { to: '/blog',         label: 'Blog' },
+                { to: '/about',        label: 'About Us' },
+                { to: '/contact',      label: 'Contact' },
               ].map(link => (
                 <li key={link.to}>
                   <Link to={link.to} className="text-sm transition-colors"
@@ -57,7 +59,7 @@ const Footer = () => {
               Contact
             </h4>
             <ul className="flex flex-col gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
-              <li>📧 support@bloodplus.com</li>
+              <li>📧 support@bloodlink.com</li>
               <li>📞 +880 1XXX-XXXXXX</li>
               <li>📍 Dhaka, Bangladesh</li>
             </ul>
@@ -119,17 +121,21 @@ const Footer = () => {
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3"
              style={{ borderTop: '1px solid var(--border)' }}>
           <p className="text-sm" style={{ color: 'var(--text-faint)' }}>
-            © {new Date().getFullYear()} Blood+. All rights reserved.
+            © {new Date().getFullYear()} BloodLink. All rights reserved.
           </p>
           <div className="flex gap-5">
-            {['Privacy Policy', 'Terms of Service', 'Contact'].map(item => (
-              <a key={item} href="#" className="text-xs transition-colors"
+            {[
+              { label: 'Privacy Policy', to: '/contact' },
+              { label: 'Terms of Service', to: '/about' },
+              { label: 'Contact', to: '/contact' },
+            ].map(item => (
+              <Link key={item.label} to={item.to} className="text-xs transition-colors"
                 style={{ color: 'var(--text-faint)' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#C00707'}
                 onMouseLeave={e => e.currentTarget.style.color = 'var(--text-faint)'}
               >
-                {item}
-              </a>
+                {item.label}
+              </Link>
             ))}
           </div>
         </div>

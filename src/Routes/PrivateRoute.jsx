@@ -141,9 +141,9 @@ const AuthLoader = () => (
         </svg>
       </div>
 
-      {/* BLOOD+ wordmark */}
+      {/* BLOODLINK wordmark */}
       <div className="hb-logo">
-        <span>BLOOD</span><span>+</span>
+        <span>BLOOD</span><span>LINK</span>
       </div>
 
       {/* Heartbeat bars */}

@@ -1,10 +1,11 @@
+// src/Routes/Routes.jsx
 import { createBrowserRouter } from "react-router";
 import RootLayout from "../RootLayout/RootLayout";
 import Home from "../Pages/Home/Home";
 import Login from "../Pages/Login";
 import Register from "../Pages/Register";
 import DashboardLayout from "../DashboardLayout/DashboardLayout";
-import MainDashBoard from "../Pages/Dashboard/MainDashboard/MainDashBoard";
+import MainDashBoard from "../Pages/Dashboard/MainDashboard/MainDashboard";
 import AddRequest from "../Pages/Dashboard/AddRequest/AddRequest";
 import AllUsers from "../Pages/AllUsers/AllUsers";
 import PrivateRoute from "./PrivateRoute";
@@ -20,21 +21,27 @@ import DashBlog from "../Pages/Dashboard/DashBlog/DashBlog";
 import Settings from "../Pages/Dashboard/Settings/Settings";
 import BlogList from "../Pages/Blog/BlogList";
 import BlogDetail from "../Pages/Blog/BlogDetail";
+import About from "../Pages/About/About";
+import Contact from "../Pages/Contact/Contact";
+import RequestDetail from "../Pages/RequestDetail/RequestDetail";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
     children: [
-      { path: '/',               Component: Home },
-      { path: '/login',          Component: Login },
-      { path: '/signup',         Component: Register },
-      { path: '/donate',         element: <PrivateRoute><Donate /></PrivateRoute> },
+      { path: '/',                Component: Home },
+      { path: '/login',           Component: Login },
+      { path: '/signup',          Component: Register },
+      { path: '/donate',          element: <PrivateRoute><Donate /></PrivateRoute> },
       { path: '/payment-success', Component: PaymentSuccess },
-      { path: '/search',         Component: SearchRequest },
-      { path: '/all-requests',   Component: AllRequests },
-      { path: '/blog',           Component: BlogList },
-      { path: '/blog/:id',       Component: BlogDetail },
+      { path: '/search',          Component: SearchRequest },
+      { path: '/all-requests',    Component: AllRequests },
+      { path: '/blog',            Component: BlogList },
+      { path: '/blog/:id',        Component: BlogDetail },
+      { path: '/about',           Component: About },
+      { path: '/contact',         Component: Contact },
+      { path: '/requests/:id',    Component: RequestDetail },
     ]
   },
   {

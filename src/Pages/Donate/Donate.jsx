@@ -1,3 +1,4 @@
+// src/Pages/Donate/Donate.jsx
 import { useContext, useState } from 'react';
 import useAxios from '../../hooks/useAxios';
 import { AuthContext } from '../../Provider/AuthProvider';
@@ -37,7 +38,7 @@ const Donate = () => {
             Donate to Save Lives
           </h1>
           <p style={{ color:'rgba(255,255,255,0.8)', fontFamily:FONT_BODY, margin:0 }}>
-            Your donation helps us maintain and grow the Blood+ platform
+            Your donation helps us maintain and grow the BloodLink platform
           </p>
         </div>
       </section>
@@ -145,7 +146,7 @@ const Donate = () => {
               Why Your Donation Matters
             </h3>
             {[
-              { icon:'🖥️', title:'Platform Maintenance',   desc:'Keeps Blood+ running 24/7 so donors and recipients can connect anytime.' },
+              { icon:'🖥️', title:'Platform Maintenance',   desc:'Keeps BloodLink running 24/7 so donors and recipients can connect anytime.' },
               { icon:'📣', title:'Awareness Campaigns',    desc:'Funds outreach programs to recruit more donors across Bangladesh.' },
               { icon:'🏥', title:'Hospital Partnerships',  desc:'Helps us partner with more hospitals to expand our network.' },
               { icon:'📱', title:'App Development',        desc:'Enables new features that make finding blood even faster.' },

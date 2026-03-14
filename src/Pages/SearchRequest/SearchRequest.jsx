@@ -70,6 +70,7 @@ const SearchRequest = () => {
   const [results, setResults]     = useState([]);
   const [searched, setSearched]   = useState(false);
   const [loading, setLoading]     = useState(false);
+  const [sortBy, setSortBy]       = useState('default');
   const axiosInstance = useAxios();
 
   useEffect(() => {
@@ -189,11 +190,25 @@ const SearchRequest = () => {
 
         {searched && !loading && results.length > 0 && (
           <>
-            <p style={{ fontSize:14, color:'var(--text-muted)', marginBottom:20, fontFamily:FONT_BODY }}>
-              Found <strong style={{ color:'var(--text-primary)', fontFamily:FONT_DISPLAY }}>{results.length}</strong> donor{results.length !== 1 ? 's' : ''}
-            </p>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:20, flexWrap:'wrap', gap:10 }}>
+              <p style={{ fontSize:14, color:'var(--text-muted)', margin:0, fontFamily:FONT_BODY }}>
+                Found <strong style={{ color:'var(--text-primary)', fontFamily:FONT_DISPLAY }}>{results.length}</strong> donor{results.length !== 1 ? 's' : ''}
+              </p>
+              <select value={sortBy} onChange={e => setSortBy(e.target.value)}
+                style={{ padding:'8px 12px', borderRadius:10, border:'1px solid var(--border)', backgroundColor:'var(--bg-base)', color:'var(--text-primary)', fontSize:12, fontFamily:FONT_BODY, outline:'none', cursor:'pointer' }}>
+                <option value="default">Sort: Default</option>
+                <option value="name_az">Name A → Z</option>
+                <option value="name_za">Name Z → A</option>
+                <option value="district_az">District A → Z</option>
+              </select>
+            </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:18 }}>
-              {results.map((s, i) => <ResultCard key={s._id || i} s={s} />)}
+              {[...results].sort((a,b) => {
+                if (sortBy==='name_az') return (a.recipient_name||'').localeCompare(b.recipient_name||'');
+                if (sortBy==='name_za') return (b.recipient_name||'').localeCompare(a.recipient_name||'');
+                if (sortBy==='district_az') return (a.recipient_district||'').localeCompare(b.recipient_district||'');
+                return 0;
+              }).map((s, i) => <ResultCard key={s._id || i} s={s} />)}
             </div>
           </>
         )}

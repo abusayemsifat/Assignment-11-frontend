@@ -22,8 +22,8 @@ const steps = [
   { step:'03', icon:'🩸', title:'Save a Life',  desc:'Connect directly with the donor and coordinate the donation.' },
 ];
 const testimonials = [
-  { name:'Fatima Khanam',  location:'Dhaka',      text:'Blood+ connected me with a donor within 2 hours. My son is alive because of this platform.', avatar:'👩' },
-  { name:'Rahim Uddin',    location:'Chittagong', text:'I donate every 3 months. Blood+ makes it easy to find people who truly need help.', avatar:'👨' },
+  { name:'Fatima Khanam',  location:'Dhaka',      text:'BloodLink connected me with a donor within 2 hours. My son is alive because of this platform.', avatar:'👩' },
+  { name:'Rahim Uddin',    location:'Chittagong', text:'I donate every 3 months. BloodLink makes it easy to find people who truly need help.', avatar:'👨' },
   { name:'Nusrat Jahan',   location:'Sylhet',     text:'After my accident, the hospital needed O− urgently. Got a donor in under an hour!', avatar:'👩' },
 ];
 const faqs = [
@@ -71,10 +71,7 @@ const CSS = `
     0%,100% { box-shadow: 0 0 0 0   currentColor; opacity:1; }
     50%      { box-shadow: 0 0 0 6px transparent;  opacity:0.7; }
   }
-  @keyframes shimmer-bar {
-    0%   { transform: translateX(-100%); }
-    100% { transform: translateX(400%); }
-  }
+
   @keyframes blood-drip {
     0%   { transform: scaleY(0) translateY(0); opacity:1; }
     80%  { transform: scaleY(1) translateY(0); opacity:1; }
@@ -136,18 +133,7 @@ const CSS = `
   .faq-row { transition: border-color 0.2s, transform 0.2s, background 0.2s !important; }
   .faq-row:hover { transform: translateX(6px) !important; border-left-color: #FF4400 !important; background: var(--bg-subtle) !important; }
 
-  /* Shimmer bar inside stat numbers */
-  .count-shimmer {
-    position: relative; overflow: hidden;
-    display: inline-block;
-  }
-  .count-shimmer::after {
-    content: '';
-    position: absolute; top: 0; left: 0;
-    width: 30%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-    animation: shimmer-bar 2s ease 1.5s 1;
-  }
+
 
   /* CTA button spring */
   .cta-btn {
@@ -164,7 +150,7 @@ const StatCounter = ({ target, suffix, label, icon, color, delay }) => {
     <div ref={ref} className="stat-card" data-reveal data-reveal-dir="scale"
       style={{ textAlign:'center', animationDelay: delay }}>
       <div style={{ fontSize:30, marginBottom:4 }}>{icon}</div>
-      <p className="count-shimmer" style={{ fontFamily:FD, fontWeight:800, fontSize:32, color, margin:'4px 0 2px', display:'block' }}>
+      <p style={{ fontFamily:FD, fontWeight:800, fontSize:32, color, margin:'4px 0 2px', display:'block' }}>
         {display}
       </p>
       <p style={{ fontSize:12, color:'#888', margin:0, fontFamily:FB }}>{label}</p>
