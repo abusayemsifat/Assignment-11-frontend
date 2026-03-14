@@ -81,12 +81,12 @@ Every year, thousands of people in Bangladesh die because they cannot find a com
 
 ```bash
 # Frontend
-git clone https://github.com/your-username/bloodlink-frontend.git
+git clone https://github.com/abusayemsifat/bloodlink-frontend.git
 cd bloodlink-frontend
 npm install
 
 # Backend
-git clone https://github.com/your-username/bloodlink-backend.git
+git clone https://github.com/abusayemsifat/bloodlink-backend.git
 cd bloodlink-backend
 npm install
 ```
@@ -96,14 +96,19 @@ npm install
 **Frontend** — create `.env.local` in the frontend root:
 
 ```env
-VITE_FIREBASE_API_KEY=
-VITE_FIREBASE_AUTH_DOMAIN=
-VITE_FIREBASE_PROJECT_ID=
-VITE_FIREBASE_STORAGE_BUCKET=
-VITE_FIREBASE_MESSAGING_SENDER_ID=
-VITE_FIREBASE_APP_ID=
-VITE_IMGBB_API_KEY=
-VITE_BACKEND_URL=https://your-backend.vercel.app
+# Get these 6 values from Firebase Console → Project Settings → Your Apps → SDK Config
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+
+# Get from https://api.imgbb.com → generate a key
+VITE_IMGBB_API_KEY=your_imgbb_api_key
+
+# Already deployed — use this value as-is
+VITE_BACKEND_URL=https://backend-11-cyan.vercel.app
 ```
 
 **Backend** — create `.env` in the backend root:
@@ -113,7 +118,7 @@ PORT=3000
 MONGODB_URI=your_mongodb_atlas_connection_string
 FB_SERVICE_KEY=your_base64_encoded_firebase_service_account_json
 STRIPE_SECRET=your_stripe_secret_key
-SITE_DOMAIN=https://your-frontend-domain.com
+SITE_DOMAIN=https://assignment-11-abusayemsifat.pages.dev
 ```
 
 > To encode your Firebase service account: `base64 -i serviceAccountKey.json`
@@ -214,6 +219,12 @@ src/
 |------|-------|----------|
 | Donor | `donor@bloodlink.com` | `Demo@1234` |
 | Admin | `admin@bloodlink.com` | `Admin@1234` |
+
+---
+
+## License
+
+MIT © 2025 BloodLink
 
 ---
 
