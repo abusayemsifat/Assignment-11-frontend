@@ -30,16 +30,30 @@ function HeroStat({ target, suffix, label, started }) {
 
 const Hero = () => {
   const [visible, setVisible] = useState(false);
+  const [navbarHeight, setNavbarHeight] = useState(64);
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const getNavbarHeight = () => {
+      const navbar = document.querySelector('nav');
+      if (navbar) {
+        setNavbarHeight(navbar.offsetHeight);
+      }
+    };
+    getNavbarHeight();
+    window.addEventListener('resize', getNavbarHeight);
+    return () => window.removeEventListener('resize', getNavbarHeight);
+  }, []);
+
   return (
     <section style={{
       background: 'linear-gradient(135deg, #7B0000 0%, #C00707 45%, #FF4400 80%, #FFB33F 100%)',
-      height: '100vh',
+      minHeight: `calc(100vh - ${navbarHeight}px)`,
+      height: `calc(100vh - ${navbarHeight}px)`,
       width: '100%',
       display: 'flex',
       alignItems: 'center',
@@ -239,13 +253,13 @@ const Hero = () => {
       <div
         style={{
           position: 'absolute',
-          bottom: 24,
+          bottom: '16px',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 8,
+          gap: '4px',
           cursor: 'pointer',
           zIndex: 10,
           opacity: visible ? 0.7 : 0,
@@ -254,8 +268,8 @@ const Hero = () => {
         }}
         onClick={() => window.scrollBy({ top: window.innerHeight, behavior: 'smooth' })}
       >
-        <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#fff', opacity: 0.7 }}>Scroll</span>
-        <div style={{ width: 2, height: 40, borderRadius: 2, overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.3)' }}>
+        <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#fff', opacity: 0.6 }}>Scroll</span>
+        <div style={{ width: '2px', height: '30px', borderRadius: '2px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.3)' }}>
           <div style={{
             width: '100%',
             height: '100%',
