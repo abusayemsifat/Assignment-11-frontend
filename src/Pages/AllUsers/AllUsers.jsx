@@ -60,26 +60,101 @@ const AllUsers = () => {
                     style={{
                         padding: '9px 14px', borderRadius: 10, border: '1px solid var(--border)',
                         backgroundColor: 'var(--bg-subtle)', color: 'var(--text-primary)',
-                        fontFamily: FONT_BODY, fontSize: 13, outline: 'none', width: 220,
+                        fontFamily: FONT_BODY, fontSize: 13, outline: 'none', width: '100%', maxWidth: 220,
                     }}
                     onFocus={e => e.target.style.borderColor = '#C00707'}
                     onBlur={e => e.target.style.borderColor = 'var(--border)'}
                 />
             </div>
 
-            <div style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            {/* Mobile Card View */}
+            <div className="block md:hidden">
+                {loading ? (
+                    [...Array(5)].map((_, i) => (
+                        <div key={i} style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border)', borderRadius: 16, padding: 16, marginBottom: 12 }}>
+                            <div style={{ height: 14, borderRadius: 6, backgroundColor: 'var(--bg-muted)', animation: 'pulse 1.5s infinite', marginBottom: 10 }} />
+                            <div style={{ height: 14, borderRadius: 6, backgroundColor: 'var(--bg-muted)', animation: 'pulse 1.5s infinite', width: '80%' }} />
+                        </div>
+                    ))
+                ) : paginated.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: 48, color: 'var(--text-muted)' }}>No users found</div>
+                ) : (
+                    paginated.map(u => {
+                        const rb = roleBadge[u.role] || roleBadge.donor;
+                        const sb = statusBadge[u.status] || statusBadge.active;
+                        return (
+                            <div key={u._id || u.email} style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border)', borderRadius: 16, padding: 16, marginBottom: 12 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                                    <div style={{ width: 48, height: 48, borderRadius: 12, overflow: 'hidden', backgroundColor: 'var(--bg-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {u.mainPhotoUrl
+                                            ? <img src={u.mainPhotoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            : <span style={{ fontSize: 24 }}>👤</span>
+                                        }
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <p style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 15, color: 'var(--text-primary)', margin: 0 }}>{u.name || '—'}</p>
+                                        <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '4px 0 0' }}>{u.email}</p>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
+                                    <div style={{ flex: 1, minWidth: 100 }}>
+                                        <p style={{ fontSize: 11, color: 'var(--text-faint)', margin: 0, marginBottom: 4 }}>Blood Group</p>
+                                        {u.blood ? (
+                                            <span style={{ display: 'inline-block', padding: '4px 10px', borderRadius: 8, backgroundColor: 'rgba(192,7,7,0.15)', color: '#C00707', fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 13 }}>
+                                                {u.blood}
+                                            </span>
+                                        ) : <span style={{ color: 'var(--text-faint)', fontSize: 13 }}>—</span>}
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 100 }}>
+                                        <p style={{ fontSize: 11, color: 'var(--text-faint)', margin: 0, marginBottom: 4 }}>District</p>
+                                        <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>{u.district || '—'}</p>
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 100 }}>
+                                        <p style={{ fontSize: 11, color: 'var(--text-faint)', margin: 0, marginBottom: 4 }}>Role</p>
+                                        <span style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 8, backgroundColor: rb.bg, color: rb.color, fontSize: 12, fontWeight: 600 }}>
+                                            {u.role || 'donor'}
+                                        </span>
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 100 }}>
+                                        <p style={{ fontSize: 11, color: 'var(--text-faint)', margin: 0, marginBottom: 4 }}>Status</p>
+                                        <span style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 8, backgroundColor: sb.bg, color: sb.color, fontSize: 12, fontWeight: 600 }}>
+                                            {u.status || 'active'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style={{ marginTop: 12 }}>
+                                    {u.status === 'active' ? (
+                                        <button onClick={() => handleStatusChange(u.email, 'blocked')}
+                                            style={{ width: '100%', padding: '8px 16px', borderRadius: 10, border: 'none', backgroundColor: 'rgba(192,7,7,0.14)', color: '#C00707', fontFamily: FONT_BODY, fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
+                                            Block User
+                                        </button>
+                                    ) : (
+                                        <button onClick={() => handleStatusChange(u.email, 'active')}
+                                            style={{ width: '100%', padding: '8px 16px', borderRadius: 10, border: 'none', backgroundColor: 'rgba(22,101,52,0.15)', color: '#4ade80', fontFamily: FONT_BODY, fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
+                                            Activate User
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block" style={{ backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
                 <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 520 }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
                         <thead>
                             <tr style={{ backgroundColor: 'rgba(192,7,7,0.06)' }}>
                                 {[
-                                    { label:'User', key:'name' },
-                                    { label:'Email', key:'email' },
-                                    { label:'Blood', key:null },
-                                    { label:'District', key:'district' },
-                                    { label:'Role', key:'role' },
-                                    { label:'Status', key:'status' },
-                                    { label:'Action', key:null },
+                                    { label: 'User', key: 'name' },
+                                    { label: 'Email', key: 'email' },
+                                    { label: 'Blood', key: null },
+                                    { label: 'District', key: 'district' },
+                                    { label: 'Role', key: 'role' },
+                                    { label: 'Status', key: 'status' },
+                                    { label: 'Action', key: null },
                                 ].map(({ label, key }) => (
                                     <th key={label} onClick={() => key && handleSort(key)}
                                         style={{
@@ -101,14 +176,14 @@ const AllUsers = () => {
                             {loading ? (
                                 [...Array(5)].map((_, i) => (
                                     <tr key={i}>
-                                        {[1,2,3,4,5,6,7].map(j => (
+                                        {[1, 2, 3, 4, 5, 6, 7].map(j => (
                                             <td key={j} style={{ padding: '14px 16px' }}>
                                                 <div style={{ height: 14, borderRadius: 6, backgroundColor: 'var(--bg-muted)', animation: 'pulse 1.5s infinite' }} />
                                             </td>
                                         ))}
                                     </tr>
                                 ))
-                            ) : filtered.length === 0 ? (
+                            ) : paginated.length === 0 ? (
                                 <tr>
                                     <td colSpan={7} style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: FONT_BODY, fontSize: 14 }}>
                                         <div style={{ fontSize: 36, marginBottom: 10 }}>👥</div>
@@ -144,19 +219,19 @@ const AllUsers = () => {
                                             <td style={{ padding: '12px 16px', fontFamily: FONT_BODY, fontSize: 12, color: 'var(--text-muted)' }}>{u.email}</td>
                                             <td style={{ padding: '12px 16px' }}>
                                                 {u.blood ? (
-                                                    <span style={{ display:'inline-block', padding:'2px 8px', borderRadius:6, backgroundColor:'rgba(192,7,7,0.15)', color:'#C00707', fontFamily: FONT_DISPLAY, fontWeight:700, fontSize:12 }}>
+                                                    <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 6, backgroundColor: 'rgba(192,7,7,0.15)', color: '#C00707', fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 12 }}>
                                                         {u.blood}
                                                     </span>
-                                                ) : <span style={{ color: 'var(--text-faint)', fontSize:12 }}>—</span>}
+                                                ) : <span style={{ color: 'var(--text-faint)', fontSize: 12 }}>—</span>}
                                             </td>
                                             <td style={{ padding: '12px 16px', fontFamily: FONT_BODY, fontSize: 13, color: 'var(--text-muted)' }}>{u.district || '—'}</td>
                                             <td style={{ padding: '12px 16px' }}>
-                                                <span style={{ display:'inline-block', padding:'3px 10px', borderRadius:8, backgroundColor: rb.bg, color: rb.color, fontFamily: FONT_BODY, fontWeight:600, fontSize:12, textTransform:'capitalize' }}>
+                                                <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 8, backgroundColor: rb.bg, color: rb.color, fontFamily: FONT_BODY, fontWeight: 600, fontSize: 12, textTransform: 'capitalize' }}>
                                                     {u.role || 'donor'}
                                                 </span>
                                             </td>
                                             <td style={{ padding: '12px 16px' }}>
-                                                <span style={{ display:'inline-block', padding:'3px 10px', borderRadius:8, backgroundColor: sb.bg, color: sb.color, fontFamily: FONT_BODY, fontWeight:600, fontSize:12, textTransform:'capitalize' }}>
+                                                <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 8, backgroundColor: sb.bg, color: sb.color, fontFamily: FONT_BODY, fontWeight: 600, fontSize: 12, textTransform: 'capitalize' }}>
                                                     {u.status || 'active'}
                                                 </span>
                                             </td>
@@ -181,16 +256,17 @@ const AllUsers = () => {
                     </table>
                 </div>
             </div>
+
             {!loading && totalPages > 1 && (
-                <div style={{ display:'flex', justifyContent:'center', gap:8, marginTop:20, flexWrap:'wrap' }}>
-                    <button onClick={() => setPage(p => Math.max(1,p-1))} disabled={page===1}
-                        style={{ padding:'7px 14px', borderRadius:9, border:'1px solid var(--border)', backgroundColor:'var(--bg-subtle)', color:'var(--text-muted)', fontSize:12, fontFamily:FONT_DISPLAY, cursor:'pointer', opacity:page===1?0.4:1 }}>← Prev</button>
-                    {[...Array(totalPages)].map((_,i) => (
-                        <button key={i} onClick={() => setPage(i+1)}
-                            style={{ width:34, height:34, borderRadius:9, border:`1px solid ${page===i+1?'#C00707':'var(--border)'}`, backgroundColor:page===i+1?'#C00707':'var(--bg-subtle)', color:page===i+1?'#fff':'var(--text-muted)', fontSize:12, fontFamily:FONT_DISPLAY, cursor:'pointer' }}>{i+1}</button>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 20, flexWrap: 'wrap' }}>
+                    <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                        style={{ padding: '7px 14px', borderRadius: 9, border: '1px solid var(--border)', backgroundColor: 'var(--bg-subtle)', color: 'var(--text-muted)', fontSize: 12, fontFamily: FONT_DISPLAY, cursor: 'pointer', opacity: page === 1 ? 0.4 : 1 }}>← Prev</button>
+                    {[...Array(totalPages)].map((_, i) => (
+                        <button key={i} onClick={() => setPage(i + 1)}
+                            style={{ width: 34, height: 34, borderRadius: 9, border: `1px solid ${page === i + 1 ? '#C00707' : 'var(--border)'}`, backgroundColor: page === i + 1 ? '#C00707' : 'var(--bg-subtle)', color: page === i + 1 ? '#fff' : 'var(--text-muted)', fontSize: 12, fontFamily: FONT_DISPLAY, cursor: 'pointer' }}>{i + 1}</button>
                     ))}
-                    <button onClick={() => setPage(p => Math.min(totalPages,p+1))} disabled={page===totalPages}
-                        style={{ padding:'7px 14px', borderRadius:9, border:'1px solid var(--border)', backgroundColor:'var(--bg-subtle)', color:'var(--text-muted)', fontSize:12, fontFamily:FONT_DISPLAY, cursor:'pointer', opacity:page===totalPages?0.4:1 }}>Next →</button>
+                    <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                        style={{ padding: '7px 14px', borderRadius: 9, border: '1px solid var(--border)', backgroundColor: 'var(--bg-subtle)', color: 'var(--text-muted)', fontSize: 12, fontFamily: FONT_DISPLAY, cursor: 'pointer', opacity: page === totalPages ? 0.4 : 1 }}>Next →</button>
                 </div>
             )}
             <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}`}</style>

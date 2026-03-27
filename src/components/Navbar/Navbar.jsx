@@ -1,69 +1,41 @@
 // src/components/Navbar/Navbar.jsx
 import { useContext, useState, useRef, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router';
+import { motion, AnimatePresence } from 'framer-motion';
 import { signOut } from 'firebase/auth';
-import auth from '../../firebase/firebase.config';           // ✅ fixed: lowercase 'firebase'
+import auth from '../../firebase/firebase.config';
 import { AuthContext } from '../../Provider/AuthProvider';
 import { useTheme } from '../../context/ThemeContext';
+import toast from 'react-hot-toast';
 
-// ── Icons (no extra package needed) ─────────────────────────────
-const SunIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <circle cx="12" cy="12" r="5" />
-    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-  </svg>
-);
-const MoonIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
-  </svg>
-);
-const ChevronDown = ({ open }) => (
-  <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-  </svg>
-);
+// Public links (logged out)
+const publicLinks = [
+  { to: '/',             label: 'Home' },
+  { to: '/all-requests', label: 'Blood Requests' },
+  { to: '/search',       label: 'Find Donors' },
+  { to: '/donate',       label: 'Donate' },
+  { to: '/blog',         label: 'Blog' },
+  { to: '/about',        label: 'About' },
+  { to: '/contact',      label: 'Contact' },
+];
 
-// ── Active nav link with animated underline ──────────────────────
-function NavLink({ to, children }) {
-  const { pathname } = useLocation();
-  const active = pathname === to;
-  return (
-    <Link
-      to={to}
-      className={`
-        relative text-sm font-semibold py-1 transition-colors duration-150
-        after:absolute after:bottom-0 after:left-0 after:h-[2px] after:rounded-full
-        after:transition-all after:duration-200
-        ${active
-          ? 'text-[#C00707] after:w-full after:bg-[#C00707]'
-          : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] after:w-0 hover:after:w-full after:bg-[#C00707]'
-        }
-      `}
-    >
-      {children}
-    </Link>
-  );
-}
+// Logged in links
+const loggedInLinks = [
+  { to: '/',             label: 'Home' },
+  { to: '/all-requests', label: 'Blood Requests' },
+  { to: '/search',       label: 'Find Donors' },
+  { to: '/donate',       label: 'Donate' },
+  { to: '/dashboard',    label: 'Dashboard' },
+  { to: '/blog',         label: 'Blog' },
+  { to: '/about',        label: 'About' },
+  { to: '/contact',      label: 'Contact' },
+];
 
-// ── User avatar ──────────────────────────────────────────────────
-function Avatar({ user }) {
-  if (user?.photoURL) {
-    return (
-      <img src={user.photoURL} alt={user.displayName || 'User'}
-        className="w-8 h-8 rounded-full object-cover border-2 border-[#C00707]" />
-    );
-  }
-  return (
-    <div className="w-8 h-8 rounded-full bg-[#C00707] text-white flex items-center
-                    justify-center text-sm font-bold border-2 border-[#C00707]">
-      {(user?.displayName || user?.email || 'U')[0].toUpperCase()}
-    </div>
-  );
-}
+const getInitials = (name) => {
+  if (!name) return 'U';
+  return name.charAt(0).toUpperCase();
+};
 
-// ── Main Navbar ──────────────────────────────────────────────────
 const Navbar = () => {
   const { user } = useContext(AuthContext);
   const { dark, toggle } = useTheme();
@@ -71,295 +43,320 @@ const Navbar = () => {
   const { pathname } = useLocation();
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const profileRef = useRef(null);
+  const [dropOpen, setDropOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const dropRef = useRef(null);
 
-  // Close profile dropdown on outside click
+  const links = user ? loggedInLinks : publicLinks;
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+    setDropOpen(false);
+  }, [pathname]);
+
   useEffect(() => {
     const handler = (e) => {
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
-        setProfileOpen(false);
+      if (dropRef.current && !dropRef.current.contains(e.target)) {
+        setDropOpen(false);
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Close menus on route change
-  useEffect(() => {
-    setMobileOpen(false);
-    setProfileOpen(false);
-  }, [pathname]);
-
-  const logout = () => {
-    signOut(auth);
+  const handleLogout = async () => {
+    await signOut(auth);
+    toast.success('Logged out successfully');
     navigate('/login');
+    setDropOpen(false);
   };
 
-  // Logged-out: 4 routes
-  const publicLinks = [
-    { to: '/',             label: 'Home' },
-    { to: '/all-requests', label: 'Blood Requests' },
-    { to: '/search',       label: 'Find Donors' },
-    { to: '/donate',       label: 'Donate' },
-    { to: '/about',        label: 'About' },
-    { to: '/contact',      label: 'Contact' },
-  ];
-
-  // Logged-in: 6 routes (Dashboard lives in the profile dropdown)
-  const privateLinks = [
-    { to: '/',             label: 'Home' },
-    { to: '/all-requests', label: 'Blood Requests' },
-    { to: '/search',       label: 'Find Donors' },
-    { to: '/donate',       label: 'Donate' },
-    { to: '/blog',         label: 'Blog' },
-    { to: '/about',        label: 'About' },
-    { to: '/contact',      label: 'Contact' },
-  ];
-
-  const navLinks = user ? privateLinks : publicLinks;
-
-  // Profile dropdown items
-  const profileMenu = [
-    { label: '🏠 Dashboard',     path: '/dashboard' },
-    { label: '👤 My Profile',   path: '/dashboard/profile' },
-    { label: '🩸 My Requests',  path: '/dashboard/my-request' },
-    { divider: true },
-    { label: '🚪 Logout',       danger: true, onClick: logout },
-  ];
-
   return (
-    <nav
-      className="sticky top-0 z-50 w-full"
+    <motion.nav
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? 'bg-base-100/90 backdrop-blur-xl shadow-lg border-b border-base-200'
+          : 'bg-base-100/70 backdrop-blur-md'
+      }`}
       style={{
-        backgroundColor: 'var(--bg-base)',
-        borderBottom: '1px solid var(--border)',
-        boxShadow: 'var(--shadow-sm)',
-        backdropFilter: 'blur(12px)',
+        backgroundColor: scrolled ? 'var(--bg-base)' : 'var(--bg-base)',
+        borderBottom: `1px solid var(--border)`,
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 
-          {/* ── Logo ─────────────────────────────────────────── */}
-          <Link to="/" className="flex items-center gap-2 shrink-0">
-            <span className="text-xl">🩸</span>
-            <span className="font-bold text-xl tracking-tight" style={{ fontFamily: "'Sora', sans-serif" }}>
-              <span style={{ color: '#C00707' }}>BLOOD</span>
-              <span style={{ color: dark ? '#FFB33F' : '#134E8E' }}>LINK</span>
-            </span>
-          </Link>
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            className="w-8 h-8 bg-gradient-to-br from-[#C00707] to-[#FF4400] rounded-xl flex items-center justify-center shadow-lg shadow-[#C00707]/30"
+          >
+            <span className="text-white text-sm">🩸</span>
+          </motion.div>
+          <span className="font-extrabold text-xl">
+            <span style={{ color: '#C00707' }}>BLOOD</span>
+            <span style={{ color: '#134E8E' }}>LINK</span>
+          </span>
+        </Link>
 
-          {/* ── Desktop links ─────────────────────────────────── */}
-          <div className="hidden lg:flex items-center gap-7">
-            {navLinks.map(link => (
-              <NavLink key={link.to} to={link.to}>{link.label}</NavLink>
-            ))}
-          </div>
-
-          {/* ── Right side controls ───────────────────────────── */}
-          <div className="flex items-center gap-2">
-
-            {/* Dark/Light toggle */}
-            <button
-              onClick={toggle}
-              aria-label="Toggle dark mode"
-              className="w-9 h-9 rounded-xl flex items-center justify-center
-                         cursor-pointer"
-              style={{
-                backgroundColor: 'var(--bg-muted)',
-                border: '1px solid var(--border)',
-                color: dark ? '#FFB33F' : 'var(--text-muted)',
-              }}
+        {/* Desktop links */}
+        <div className="hidden lg:flex items-center gap-8">
+          {links.map(l => (
+            <NavLink
+              key={l.to}
+              to={l.to}
+              end={l.to === '/'}
+              className={({ isActive }) =>
+                `relative text-sm font-semibold transition-colors duration-200 hover:text-[#C00707] ${
+                  isActive ? 'text-[#C00707]' : 'text-[var(--text-muted)]'
+                }`
+              }
             >
-              {dark ? <SunIcon /> : <MoonIcon />}
-            </button>
+              {({ isActive }) => (
+                <span className="relative">
+                  {l.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="navUnderline"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-[#C00707] to-[#FF4400] rounded-full"
+                    />
+                  )}
+                </span>
+              )}
+            </NavLink>
+          ))}
+        </div>
 
-            {/* Auth */}
-            {user ? (
-              /* Profile dropdown — desktop only */
-              <div className="relative hidden lg:block" ref={profileRef}>
-                <button
-                  onClick={() => setProfileOpen(o => !o)}
-                  className="flex items-center gap-2 px-2 py-1.5 rounded-xl cursor-pointer
-                             transition-colors duration-150"
-                  style={{
-                    border: '1px solid transparent',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--bg-subtle)'}
-                  onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
-                >
-                  <Avatar user={user} />
-                  <div className="text-left hidden xl:block">
-                    <p className="text-xs font-semibold leading-none font-['Sora']"
-                       style={{ color: 'var(--text-primary)' }}>
-                      {user.displayName?.split(' ')[0] || 'User'}
-                    </p>
-                    <p className="text-[10px] leading-none mt-0.5"
-                       style={{ color: 'var(--text-faint)' }}>
-                      {user.email?.slice(0, 22)}
-                    </p>
+        {/* Right side */}
+        <div className="flex items-center gap-2">
+          {/* Theme toggle */}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={toggle}
+            className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-[var(--bg-muted)] transition-colors"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={dark ? 'dark' : 'light'}
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="text-base"
+              >
+                {dark ? '☀️' : '🌙'}
+              </motion.span>
+            </AnimatePresence>
+          </motion.button>
+
+          {user ? (
+            <div className="relative" ref={dropRef}>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setDropOpen(d => !d)}
+                className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl hover:bg-[var(--bg-muted)] transition-colors"
+              >
+                {user.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt="avatar"
+                    className="w-8 h-8 rounded-xl object-cover ring-2 ring-[#C00707]/20"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#C00707] to-[#FF4400] text-white text-xs font-bold flex items-center justify-center shadow-md shadow-[#C00707]/30">
+                    {getInitials(user.displayName || user.email)}
                   </div>
-                  <ChevronDown open={profileOpen} />
-                </button>
+                )}
+                <span className="hidden md:block text-sm font-semibold max-w-[100px] truncate" style={{ color: 'var(--text-primary)' }}>
+                  {user.displayName || 'User'}
+                </span>
+                <motion.span
+                  animate={{ rotate: dropOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-xs"
+                  style={{ color: 'var(--text-faint)' }}
+                >
+                  ▼
+                </motion.span>
+              </motion.button>
 
-                {/* Dropdown panel */}
-                {profileOpen && (
-                  <div
-                    className="absolute right-0 top-full mt-2 w-52 z-50 rounded-2xl overflow-hidden"
+              <AnimatePresence>
+                {dropOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-12 w-56 rounded-2xl shadow-2xl py-2 z-50"
                     style={{
                       backgroundColor: 'var(--bg-base)',
                       border: '1px solid var(--border)',
-                      boxShadow: 'var(--shadow-lg)',
                     }}
                   >
-                    {/* User info header */}
-                    <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--bg-subtle)' }}>
-                      <p className="text-sm font-semibold font-['Sora'] truncate" style={{ color: 'var(--text-primary)' }}>
+                    <div className="px-4 py-3 border-b" style={{ borderBottomColor: 'var(--border)' }}>
+                      <p className="font-bold text-sm truncate" style={{ color: 'var(--text-primary)' }}>
                         {user.displayName || 'User'}
                       </p>
-                      <p className="text-xs truncate" style={{ color: 'var(--text-faint)' }}>{user.email}</p>
+                      <p className="text-xs truncate" style={{ color: 'var(--text-faint)' }}>
+                        {user.email}
+                      </p>
                     </div>
-
-                    {/* Menu items */}
-                    {profileMenu.map((item, i) => {
-                      if (item.divider) return (
-                        <div key={i} style={{ borderTop: '1px solid var(--border)', margin: '4px 0' }} />
-                      );
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => {
-                            item.onClick ? item.onClick() : navigate(item.path);
-                            setProfileOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-2.5 text-sm transition-colors cursor-pointer"
-                          style={{ color: item.danger ? '#C00707' : 'var(--text-primary)' }}
-                          onMouseEnter={e => e.currentTarget.style.backgroundColor = item.danger ? 'rgba(192,7,7,0.06)' : 'var(--bg-subtle)'}
-                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                          {item.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                    {[
+                      { to: '/dashboard',         icon: '📊', label: 'Dashboard' },
+                      { to: '/dashboard/profile', icon: '👤', label: 'My Profile' },
+                      { to: '/dashboard/my-request', icon: '🩸', label: 'My Requests' },
+                    ].map(item => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        onClick={() => setDropOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[var(--bg-muted)] transition-colors font-medium"
+                        style={{ color: 'var(--text-primary)' }}
+                      >
+                        <span className="text-base">{item.icon}</span>
+                        {item.label}
+                      </Link>
+                    ))}
+                    <div className="border-t mt-1 pt-1" style={{ borderTopColor: 'var(--border)' }}>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 w-full transition-colors font-medium"
+                      >
+                        <span>🚪</span> Logout
+                      </button>
+                    </div>
+                  </motion.div>
                 )}
-              </div>
-            ) : (
-              /* Login / Register — desktop */
-              <div className="hidden lg:flex items-center gap-2">
-                <Link to="/login"
-                  className="text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+              </AnimatePresence>
+            </div>
+          ) : (
+            <div className="hidden lg:flex items-center gap-2">
+              <Link to="/login">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-4 py-2 text-sm font-semibold rounded-xl transition-colors"
                   style={{ color: 'var(--text-muted)' }}
                   onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--bg-muted)'}
                   onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                   Login
-                </Link>
-                <Link to="/signup"
-                  className="text-sm font-semibold px-4 py-2 rounded-xl text-white transition-all"
+                </motion.button>
+              </Link>
+              <Link to="/signup">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="text-sm px-5 py-2 rounded-xl text-white"
                   style={{ backgroundColor: '#C00707' }}
                   onMouseEnter={e => e.currentTarget.style.backgroundColor = '#A00606'}
                   onMouseLeave={e => e.currentTarget.style.backgroundColor = '#C00707'}
                 >
-                  Register
-                </Link>
-              </div>
-            )}
+                  Sign Up Free
+                </motion.button>
+              </Link>
+            </div>
+          )}
 
-            {/* Hamburger — mobile only */}
-            <button
-              onClick={() => setMobileOpen(o => !o)}
-              className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl cursor-pointer"
-              style={{
-                backgroundColor: 'var(--bg-muted)',
-                border: '1px solid var(--border)',
-                color: 'var(--text-muted)',
-              }}
-              aria-label="Toggle menu"
-            >
-              {mobileOpen ? (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
-          </div>
+          {/* Hamburger - Mobile */}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setMobileOpen(o => !o)}
+            className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-[var(--bg-muted)] transition-colors lg:hidden"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            <div className="flex flex-col gap-1.5 w-5">
+              <motion.span
+                animate={mobileOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
+                className="block h-0.5 rounded-full"
+                style={{ backgroundColor: 'var(--text-primary)' }}
+              />
+              <motion.span
+                animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
+                className="block h-0.5 rounded-full"
+                style={{ backgroundColor: 'var(--text-primary)' }}
+              />
+              <motion.span
+                animate={mobileOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
+                className="block h-0.5 rounded-full"
+                style={{ backgroundColor: 'var(--text-primary)' }}
+              />
+            </div>
+          </motion.button>
         </div>
       </div>
 
-      {/* ── Mobile Menu ──────────────────────────────────────────── */}
-      {mobileOpen && (
-        <div style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--bg-base)' }}>
-          <div className="px-4 py-3 flex flex-col gap-1 max-w-7xl mx-auto">
-            {navLinks.map(link => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors
-                  ${pathname === link.to ? 'text-[#C00707]' : ''}`}
-                style={{
-                  color: pathname === link.to ? '#C00707' : 'var(--text-muted)',
-                  backgroundColor: pathname === link.to ? 'rgba(192,7,7,0.06)' : 'transparent',
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
-              {user ? (
-                <>
-                  <div className="flex items-center gap-3 px-3 py-2 mb-1">
-                    <Avatar user={user} />
-                    <div>
-                      <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                        {user.displayName || 'User'}
-                      </p>
-                      <p className="text-xs" style={{ color: 'var(--text-faint)' }}>{user.email}</p>
-                    </div>
-                  </div>
-                  <Link to="/dashboard/profile"
-                    className="block px-3 py-2.5 rounded-xl text-sm font-semibold"
-                    style={{ color: 'var(--text-muted)' }}>
-                    👤 My Profile
-                  </Link>
-                  <Link to="/dashboard/my-request"
-                    className="block px-3 py-2.5 rounded-xl text-sm font-semibold"
-                    style={{ color: 'var(--text-muted)' }}>
-                    🩸 My Requests
-                  </Link>
-                  <button
-                    onClick={logout}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold cursor-pointer"
-                    style={{ color: '#C00707' }}
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden border-t overflow-hidden"
+            style={{ borderTopColor: 'var(--border)', backgroundColor: 'var(--bg-base)' }}
+          >
+            <div className="p-4 space-y-1">
+              {links.map((l, i) => (
+                <motion.div
+                  key={l.to}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <NavLink
+                    to={l.to}
+                    end={l.to === '/'}
+                    className={({ isActive }) =>
+                      `block py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors ${
+                        isActive
+                          ? 'bg-[rgba(192,7,7,0.1)] text-[#C00707]'
+                          : 'hover:bg-[var(--bg-muted)] text-[var(--text-muted)]'
+                      }`
+                    }
+                    onClick={() => setMobileOpen(false)}
                   >
-                    🚪 Logout
-                  </button>
-                </>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <Link to="/login"
-                    className="w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold"
-                    style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
-                    Login
+                    {l.label}
+                  </NavLink>
+                </motion.div>
+              ))}
+
+              {!user && (
+                <div className="flex gap-2 pt-2 mt-2 border-t" style={{ borderTopColor: 'var(--border)' }}>
+                  <Link to="/login" onClick={() => setMobileOpen(false)} className="flex-1">
+                    <button
+                      className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors"
+                      style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                    >
+                      Login
+                    </button>
                   </Link>
-                  <Link to="/signup"
-                    className="w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold text-white"
-                    style={{ backgroundColor: '#C00707' }}>
-                    Register Free
+                  <Link to="/signup" onClick={() => setMobileOpen(false)} className="flex-1">
+                    <button
+                      className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-white"
+                      style={{ backgroundColor: '#C00707' }}
+                    >
+                      Sign Up
+                    </button>
                   </Link>
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      )}
-    </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 };
 

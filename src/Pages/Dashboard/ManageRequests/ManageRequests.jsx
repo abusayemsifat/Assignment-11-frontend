@@ -1,4 +1,3 @@
-// src/Pages/Dashboard/ManageRequests/ManageRequests.jsx
 import { useEffect, useState } from 'react';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 
@@ -85,19 +84,64 @@ export default function ManageRequests() {
         <span style={{ fontSize:12, color:'var(--text-faint)', fontFamily:FB }}>{filtered.length} result{filtered.length!==1?'s':''}</span>
       </div>
 
-      <div style={{ backgroundColor:'var(--bg-base)', border:'1px solid var(--border)', borderRadius:16, overflow:'hidden', boxShadow:'var(--shadow-sm)' }}>
-        <div style={{ overflowX:'auto' }}>
-          <table style={{ width:'100%', borderCollapse:'collapse' }}>
+      {/* Mobile Card View */}
+      <div className="block md:hidden">
+        {loading ? (
+          [...Array(5)].map((_, i) => (
+            <div key={i} style={{ backgroundColor: 'var(--bg-base)', border: '1px solid var(--border)', borderRadius: 16, padding: 16, marginBottom: 12 }}>
+              <div style={{ height: 14, borderRadius: 6, backgroundColor: 'var(--bg-muted)', animation: 'pulse 1.5s infinite', marginBottom: 10 }} />
+              <div style={{ height: 14, borderRadius: 6, backgroundColor: 'var(--bg-muted)', animation: 'pulse 1.5s infinite', width: '80%', marginBottom: 10 }} />
+              <div style={{ height: 14, borderRadius: 6, backgroundColor: 'var(--bg-muted)', animation: 'pulse 1.5s infinite', width: '60%' }} />
+            </div>
+          ))
+        ) : paginated.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 48, color: 'var(--text-muted)' }}>No requests found</div>
+        ) : (
+          paginated.map((r, i) => {
+            const sc = statusColors[r.donation_status] || statusColors.pending;
+            const bc = bloodColors[r.blood_group];
+            return (
+              <div key={r._id || i} style={{ backgroundColor: 'var(--bg-base)', border: '1px solid var(--border)', borderRadius: 16, padding: 16, marginBottom: 12 }}>
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                    <p style={{ fontFamily: FD, fontWeight: 700, fontSize: 16, color: 'var(--text-primary)', margin: 0 }}>{r.recipient_name}</p>
+                    <span style={{ display: 'inline-block', padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 800, fontFamily: FD, backgroundColor: bc ? bc + '22' : 'var(--bg-muted)', color: bc || 'var(--text-primary)' }}>
+                      {r.blood_group}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '4px 0' }}>Requester: {r.requester_name}</p>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '4px 0' }}>Hospital: {r.hospital_name}</p>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <select value={r.donation_status || 'pending'} onChange={e => changeStatus(r._id, e.target.value)}
+                    style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${sc.color}40`, backgroundColor: sc.bg, color: sc.color, fontSize: 12, fontFamily: FD, fontWeight: 700, cursor: 'pointer', outline: 'none' }}>
+                    {statusOptions.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+                  </select>
+                  <button onClick={() => setToDelete(r._id)}
+                    style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid rgba(192,7,7,0.3)', backgroundColor: 'rgba(192,7,7,0.08)', color: RED, fontSize: 11, fontFamily: FD, fontWeight: 700, cursor: 'pointer' }}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block" style={{ backgroundColor: 'var(--bg-base)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
             <thead>
               <tr>
                 {[
-                  { label:'#',         key:null },
-                  { label:'Recipient', key:'recipient_name' },
-                  { label:'Requester', key:'requester_name' },
-                  { label:'Hospital',  key:'hospital_name' },
-                  { label:'Blood',     key:'blood_group' },
-                  { label:'Status',    key:'donation_status' },
-                  { label:'Action',    key:null },
+                  { label: '#',         key: null },
+                  { label: 'Recipient', key: 'recipient_name' },
+                  { label: 'Requester', key: 'requester_name' },
+                  { label: 'Hospital',  key: 'hospital_name' },
+                  { label: 'Blood',     key: 'blood_group' },
+                  { label: 'Status',    key: 'donation_status' },
+                  { label: 'Action',    key: null },
                 ].map(({ label, key }) => (
                   <th key={label} onClick={() => key && handleSort(key)}
                     style={{ padding:'11px 14px', textAlign:'left', fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:0.8, color: sortKey===key ? '#C00707' : 'var(--text-muted)', fontFamily:FD, backgroundColor:'var(--bg-subtle)', borderBottom:'1px solid var(--border)', whiteSpace:'nowrap', cursor: key ? 'pointer' : 'default', userSelect:'none' }}>
@@ -174,6 +218,7 @@ export default function ManageRequests() {
           </div>
         </div>
       )}
+      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}`}</style>
     </div>
   );
 }
