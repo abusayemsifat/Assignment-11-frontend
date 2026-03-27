@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router';
+import { createPortal } from 'react-dom';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 
 const FD = "'Sora', sans-serif";
@@ -30,59 +31,273 @@ function EditModal({ req, onClose, onSave }) {
         message:            req.message            || '',
     });
     const [saving, setSaving] = useState(false);
-    const inp = { width:'100%', padding:'9px 12px', borderRadius:10, border:'1px solid var(--border)', backgroundColor:'var(--bg-base)', color:'var(--text-primary)', fontSize:13, fontFamily:FB, outline:'none', boxSizing:'border-box' };
-    const lbl = { display:'block', marginBottom:5, fontSize:11, fontWeight:700, color:'var(--text-muted)', fontFamily:FD, textTransform:'uppercase', letterSpacing:0.5 };
+    const scrollRef = useRef(null);
+    
+    const inp = { 
+        width: '100%', 
+        padding: '10px 14px', 
+        borderRadius: 10, 
+        border: '1px solid var(--border)', 
+        backgroundColor: 'var(--bg-base)', 
+        color: 'var(--text-primary)', 
+        fontSize: 13, 
+        fontFamily: FB, 
+        outline: 'none', 
+        boxSizing: 'border-box',
+        transition: 'border-color 0.18s'
+    };
+    
+    const lbl = { 
+        display: 'block', 
+        marginBottom: 6, 
+        fontSize: 12, 
+        fontWeight: 600, 
+        color: 'var(--text-muted)', 
+        fontFamily: FD 
+    };
+    
     const handleSave = () => {
         if (!form.recipient_name.trim()) return;
         setSaving(true);
         onSave(req._id, form, () => setSaving(false));
     };
-    return (
-        <div style={{ position:'fixed', inset:0, backgroundColor:'rgba(0,0,0,0.6)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, padding:16, backdropFilter:'blur(4px)' }}>
-            <div style={{ backgroundColor:'var(--bg-base)', borderRadius:18, padding:28, maxWidth:520, width:'100%', border:'1px solid var(--border)', boxShadow:'0 24px 64px rgba(0,0,0,0.3)', maxHeight:'90vh', overflowY:'auto' }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:22 }}>
-                    <h2 style={{ fontFamily:FD, fontWeight:700, fontSize:17, color:'var(--text-primary)', margin:0 }}>Edit Request</h2>
-                    <button onClick={onClose} style={{ width:30, height:30, borderRadius:8, border:'none', backgroundColor:'var(--bg-muted)', color:'var(--text-muted)', cursor:'pointer', fontSize:16 }}>×</button>
+    
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = 0;
+        }
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
+    
+    const modalContent = (
+        <div 
+            onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+            style={{ 
+                position: 'fixed', 
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.7)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                zIndex: 999999,
+                padding: 20,
+                backdropFilter: 'blur(4px)'
+            }}
+        >
+            <div 
+                onClick={(e) => e.stopPropagation()}
+                style={{ 
+                    backgroundColor: 'var(--bg-base)', 
+                    borderRadius: 20, 
+                    width: '100%', 
+                    maxWidth: 600,
+                    border: '1px solid var(--border)', 
+                    boxShadow: '0 24px 64px rgba(0,0,0,0.3)',
+                    maxHeight: '85vh',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}
+            >
+                <div style={{ 
+                    padding: '20px 24px',
+                    borderBottom: '1px solid var(--border)',
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    flexShrink: 0,
+                    backgroundColor: 'var(--bg-base)',
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20
+                }}>
+                    <h2 style={{ fontFamily: FD, fontWeight: 700, fontSize: 18, color: 'var(--text-primary)', margin: 0 }}>Edit Request</h2>
+                    <button 
+                        onClick={onClose} 
+                        style={{ 
+                            width: 32, 
+                            height: 32, 
+                            borderRadius: 8, 
+                            border: 'none', 
+                            backgroundColor: 'var(--bg-muted)', 
+                            color: 'var(--text-muted)', 
+                            cursor: 'pointer', 
+                            fontSize: 18,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >
+                        ×
+                    </button>
                 </div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
-                    {[
-                        { label:'Patient Name *', key:'recipient_name',     type:'text' },
-                        { label:'Hospital',       key:'hospital_name',      type:'text' },
-                        { label:'District',       key:'recipient_district', type:'text' },
-                        { label:'Upazila',        key:'recipient_upazila',  type:'text' },
-                        { label:'Donation Date',  key:'donation_date',      type:'date' },
-                        { label:'Donation Time',  key:'donation_time',      type:'time' },
-                    ].map(({ label, key, type }) => (
-                        <div key={key}>
-                            <label style={lbl}>{label}</label>
-                            <input type={type} value={form[key]} onChange={e => setForm(p => ({...p, [key]: e.target.value}))} style={inp}
-                                onFocus={e => e.target.style.borderColor=RED} onBlur={e => e.target.style.borderColor='var(--border)'} />
+                
+                <div 
+                    ref={scrollRef}
+                    style={{ 
+                        padding: '24px',
+                        overflowY: 'auto',
+                        flex: 1,
+                        minHeight: 0
+                    }}
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                            <label style={lbl}>Patient Name *</label>
+                            <input 
+                                type="text" 
+                                value={form.recipient_name} 
+                                onChange={e => setForm(p => ({...p, recipient_name: e.target.value}))} 
+                                style={inp}
+                                onFocus={e => e.target.style.borderColor = RED} 
+                                onBlur={e => e.target.style.borderColor = 'var(--border)'} 
+                            />
                         </div>
-                    ))}
-                    <div>
-                        <label style={lbl}>Blood Group</label>
-                        <select value={form.blood_group} onChange={e => setForm(p => ({...p, blood_group: e.target.value}))} style={inp}
-                            onFocus={e => e.target.style.borderColor=RED} onBlur={e => e.target.style.borderColor='var(--border)'}>
-                            {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(g => <option key={g} value={g}>{g}</option>)}
-                        </select>
+                        
+                        <div>
+                            <label style={lbl}>Hospital</label>
+                            <input 
+                                type="text" 
+                                value={form.hospital_name} 
+                                onChange={e => setForm(p => ({...p, hospital_name: e.target.value}))} 
+                                style={inp}
+                                onFocus={e => e.target.style.borderColor = RED} 
+                                onBlur={e => e.target.style.borderColor = 'var(--border)'} 
+                            />
+                        </div>
+                        
+                        <div>
+                            <label style={lbl}>District</label>
+                            <input 
+                                type="text" 
+                                value={form.recipient_district} 
+                                onChange={e => setForm(p => ({...p, recipient_district: e.target.value}))} 
+                                style={inp}
+                                onFocus={e => e.target.style.borderColor = RED} 
+                                onBlur={e => e.target.style.borderColor = 'var(--border)'} 
+                            />
+                        </div>
+                        
+                        <div>
+                            <label style={lbl}>Upazila</label>
+                            <input 
+                                type="text" 
+                                value={form.recipient_upazila} 
+                                onChange={e => setForm(p => ({...p, recipient_upazila: e.target.value}))} 
+                                style={inp}
+                                onFocus={e => e.target.style.borderColor = RED} 
+                                onBlur={e => e.target.style.borderColor = 'var(--border)'} 
+                            />
+                        </div>
+                        
+                        <div>
+                            <label style={lbl}>Blood Group</label>
+                            <select 
+                                value={form.blood_group} 
+                                onChange={e => setForm(p => ({...p, blood_group: e.target.value}))} 
+                                style={inp}
+                                onFocus={e => e.target.style.borderColor = RED} 
+                                onBlur={e => e.target.style.borderColor = 'var(--border)'}
+                            >
+                                <option value="">Select Blood Group</option>
+                                {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(g => (
+                                    <option key={g} value={g}>{g}</option>
+                                ))}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label style={lbl}>Donation Date</label>
+                            <input 
+                                type="date" 
+                                value={form.donation_date} 
+                                onChange={e => setForm(p => ({...p, donation_date: e.target.value}))} 
+                                style={inp}
+                                onFocus={e => e.target.style.borderColor = RED} 
+                                onBlur={e => e.target.style.borderColor = 'var(--border)'} 
+                            />
+                        </div>
+                        
+                        <div>
+                            <label style={lbl}>Donation Time</label>
+                            <input 
+                                type="time" 
+                                value={form.donation_time} 
+                                onChange={e => setForm(p => ({...p, donation_time: e.target.value}))} 
+                                style={inp}
+                                onFocus={e => e.target.style.borderColor = RED} 
+                                onBlur={e => e.target.style.borderColor = 'var(--border)'} 
+                            />
+                        </div>
+                        
+                        <div>
+                            <label style={lbl}>Additional Message</label>
+                            <textarea 
+                                value={form.message} 
+                                onChange={e => setForm(p => ({...p, message: e.target.value}))} 
+                                rows={3}
+                                style={{ ...inp, resize: 'vertical' }}
+                                onFocus={e => e.target.style.borderColor = RED} 
+                                onBlur={e => e.target.style.borderColor = 'var(--border)'} 
+                            />
+                        </div>
                     </div>
                 </div>
-                <div style={{ marginTop:14 }}>
-                    <label style={lbl}>Additional Message</label>
-                    <textarea value={form.message} onChange={e => setForm(p => ({...p, message: e.target.value}))} rows={3}
-                        style={{ ...inp, resize:'vertical' }}
-                        onFocus={e => e.target.style.borderColor=RED} onBlur={e => e.target.style.borderColor='var(--border)'} />
-                </div>
-                <div style={{ display:'flex', gap:10, justifyContent:'flex-end', marginTop:22 }}>
-                    <button onClick={onClose} style={{ padding:'9px 20px', borderRadius:10, border:'1px solid var(--border)', backgroundColor:'var(--bg-subtle)', color:'var(--text-muted)', fontSize:12, fontFamily:FD, cursor:'pointer' }}>Cancel</button>
-                    <button onClick={handleSave} disabled={saving || !form.recipient_name.trim()}
-                        style={{ padding:'9px 20px', borderRadius:10, border:'none', backgroundColor:saving?'var(--bg-muted)':RED, color:saving?'var(--text-faint)':'#fff', fontSize:12, fontFamily:FD, fontWeight:700, cursor:saving?'not-allowed':'pointer' }}>
-                        {saving ? 'Saving…' : 'Save Changes'}
+                
+                <div style={{ 
+                    padding: '16px 24px 20px 24px',
+                    borderTop: '1px solid var(--border)',
+                    display: 'flex', 
+                    gap: 12, 
+                    justifyContent: 'flex-end',
+                    flexShrink: 0,
+                    backgroundColor: 'var(--bg-base)',
+                    borderBottomLeftRadius: 20,
+                    borderBottomRightRadius: 20
+                }}>
+                    <button 
+                        onClick={onClose} 
+                        style={{ 
+                            padding: '8px 20px', 
+                            borderRadius: 10, 
+                            border: '1px solid var(--border)', 
+                            backgroundColor: 'var(--bg-subtle)', 
+                            color: 'var(--text-muted)', 
+                            fontSize: 13, 
+                            fontFamily: FD, 
+                            fontWeight: 600,
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        onClick={handleSave} 
+                        disabled={saving || !form.recipient_name.trim()}
+                        style={{ 
+                            padding: '8px 20px', 
+                            borderRadius: 10, 
+                            border: 'none', 
+                            backgroundColor: saving || !form.recipient_name.trim() ? 'var(--bg-muted)' : RED, 
+                            color: saving || !form.recipient_name.trim() ? 'var(--text-faint)' : '#fff', 
+                            fontSize: 13, 
+                            fontFamily: FD, 
+                            fontWeight: 700, 
+                            cursor: saving || !form.recipient_name.trim() ? 'not-allowed' : 'pointer'
+                        }}
+                    >
+                        {saving ? 'Saving...' : 'Save Changes'}
                     </button>
                 </div>
             </div>
         </div>
     );
+    
+    return createPortal(modalContent, document.body);
 }
 
 const MyRequest = () => {
@@ -172,16 +387,20 @@ const MyRequest = () => {
                         <tbody>
                             {loading ? (
                                 [...Array(5)].map((_,i) => (
-                                    <tr key={i}>{[1,2,3,4,5,6,7].map(j => (
-                                        <td key={j} style={{ padding:'13px 16px' }}>
-                                            <div style={{ height:14, borderRadius:6, backgroundColor:'var(--bg-muted)', animation:'pulse 1.5s infinite' }} />
-                                        </td>
-                                    ))}</tr>
+                                    <tr key={i}>
+                                        {[1,2,3,4,5,6,7].map(j => (
+                                            <td key={j} style={{ padding:'13px 16px' }}>
+                                                <div style={{ height:14, borderRadius:6, backgroundColor:'var(--bg-muted)', animation:'pulse 1.5s infinite' }} />
+                                            </td>
+                                        ))}
+                                    </tr>
                                 ))
                             ) : displayed.length === 0 ? (
-                                <tr><td colSpan={7} style={{ padding:'48px 24px', textAlign:'center', color:'var(--text-muted)', fontSize:14 }}>
-                                    <div style={{ fontSize:36, marginBottom:10 }}>📋</div>No requests found
-                                </td></tr>
+                                <tr>
+                                    <td colSpan={7} style={{ padding:'48px 24px', textAlign:'center', color:'var(--text-muted)', fontSize:14 }}>
+                                        <div style={{ fontSize:36, marginBottom:10 }}>📋</div>No requests found
+                                    </td>
+                                </tr>
                             ) : (
                                 displayed.map((req, i) => {
                                     const bc = bloodColors[req.blood_group] || RED;
