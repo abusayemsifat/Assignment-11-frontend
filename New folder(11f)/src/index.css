@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@plugin "daisyui";
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+
+/* ─── Dark mode via class (Tailwind v4) ──────────────────────── */
+@variant dark (&:where(.dark, .dark *));
+
+/* ─── Light Mode Variables ───────────────────────────────────── */
+:root {
+  --bg-base:      #FFFFFF;
+  --bg-subtle:    #F9F9F9;
+  --bg-muted:     #F0F0F0;
+  --border:       #E5E5E5;
+  --text-primary: #111111;
+  --text-muted:   #6B6B6B;
+  --text-faint:   #A0A0A0;
+
+  --brand-red:    #C00707;
+  --brand-orange: #FF4400;
+  --brand-amber:  #FFB33F;
+  --brand-navy:   #134E8E;
+}
+
+/* ─── Dark Mode Variables ────────────────────────────────────── */
+.dark {
+  --bg-base:      #0F0F0F;
+  --bg-subtle:    #181818;
+  --bg-muted:     #232323;
+  --border:       #2E2E2E;
+  --text-primary: #F5F5F5;
+  --text-muted:   #A0A0A0;
+  --text-faint:   #555555;
+}
+
+/* ─── Smooth transitions on theme switch ─────────────────────── */
+*, *::before, *::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
+}
+button, a {
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+              color 0.1s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+/* ─── Base ───────────────────────────────────────────────────── */
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5, h6 { font-family: 'Sora', sans-serif; }
+
+/* ─── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-subtle); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
