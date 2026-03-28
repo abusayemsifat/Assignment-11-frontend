@@ -44,12 +44,12 @@ const Avatar = ({ user }) => {
   if (user?.photoURL) {
     return (
       <img src={user.photoURL} alt={user.displayName || 'User'}
-        className="w-8 h-8 rounded-full object-cover border-2 border-[#C00707]" />
+        className="w-8 h-8 rounded-full object-cover border-2 border-[#C00707] cursor-pointer" />
     );
   }
   return (
     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#C00707] to-[#FF4400] text-white flex items-center
-                    justify-center text-sm font-bold shadow-md shadow-[#C00707]/30">
+                    justify-center text-sm font-bold shadow-md shadow-[#C00707]/30 cursor-pointer">
       {(user?.displayName || user?.email || 'U')[0].toUpperCase()}
     </div>
   );
@@ -114,14 +114,14 @@ const Navbar = () => {
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5 group">
+        <Link to="/" className="flex items-center gap-2.5 group cursor-pointer">
           <motion.div
             whileHover={{ scale: 1.1 }}
-            className="w-8 h-8 bg-gradient-to-br from-[#C00707] to-[#FF4400] rounded-xl flex items-center justify-center shadow-lg shadow-[#C00707]/30"
+            className="w-8 h-8 bg-gradient-to-br from-[#C00707] to-[#FF4400] rounded-xl flex items-center justify-center shadow-lg shadow-[#C00707]/30 cursor-pointer"
           >
             <span className="text-white text-sm">🩸</span>
           </motion.div>
-          <span className="font-extrabold text-xl">
+          <span className="font-extrabold text-xl cursor-pointer">
             <span style={{ color: '#C00707' }}>BLOOD</span>
             <span style={{ color: '#134E8E' }}>LINK</span>
           </span>
@@ -134,7 +134,7 @@ const Navbar = () => {
               to={l.to}
               end={l.to === '/'}
               className={({ isActive }) =>
-                `relative text-sm font-semibold transition-colors duration-200 hover:text-[#C00707] ${
+                `relative text-sm font-semibold transition-colors duration-200 hover:text-[#C00707] cursor-pointer ${
                   isActive ? 'text-[#C00707]' : 'text-[var(--text-muted)]'
                 }`
               }
@@ -158,7 +158,7 @@ const Navbar = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={toggle}
-            className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-[var(--bg-muted)] transition-colors"
+            className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-[var(--bg-muted)] transition-colors cursor-pointer"
             style={{ color: 'var(--text-muted)' }}
           >
             <AnimatePresence mode="wait">
@@ -180,16 +180,16 @@ const Navbar = () => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setDropOpen(d => !d)}
-                className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl hover:bg-[var(--bg-muted)] transition-colors"
+                className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl hover:bg-[var(--bg-muted)] transition-colors cursor-pointer"
               >
                 <Avatar user={user} />
-                <span className="hidden md:block text-sm font-semibold max-w-[100px] truncate" style={{ color: 'var(--text-primary)' }}>
+                <span className="hidden md:block text-sm font-semibold max-w-[100px] truncate cursor-pointer" style={{ color: 'var(--text-primary)' }}>
                   {user.displayName || 'User'}
                 </span>
                 <motion.span
                   animate={{ rotate: dropOpen ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
-                  className="text-xs"
+                  className="text-xs cursor-pointer"
                   style={{ color: 'var(--text-faint)' }}
                 >
                   ▼
@@ -241,7 +241,7 @@ const Navbar = () => {
                         key={item.to}
                         to={item.to}
                         onClick={() => setDropOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[var(--bg-muted)] transition-colors font-medium"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[var(--bg-muted)] transition-colors font-medium cursor-pointer"
                         style={{ color: 'var(--text-primary)' }}
                       >
                         <span className="text-base">{item.icon}</span>
@@ -251,7 +251,7 @@ const Navbar = () => {
                     <div className="border-t mt-1 pt-1" style={{ borderTopColor: 'var(--border)' }}>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 w-full transition-colors font-medium"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 w-full transition-colors font-medium cursor-pointer"
                       >
                         <span>🚪</span> Logout
                       </button>
@@ -266,7 +266,7 @@ const Navbar = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="px-4 py-2 text-sm font-semibold rounded-xl transition-colors"
+                  className="px-4 py-2 text-sm font-semibold rounded-xl transition-colors cursor-pointer"
                   style={{ color: 'var(--text-muted)' }}
                   onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--bg-muted)'}
                   onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -278,7 +278,7 @@ const Navbar = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="text-sm px-5 py-2 rounded-xl text-white"
+                  className="text-sm px-5 py-2 rounded-xl text-white cursor-pointer"
                   style={{ backgroundColor: '#C00707' }}
                   onMouseEnter={e => e.currentTarget.style.backgroundColor = '#A00606'}
                   onMouseLeave={e => e.currentTarget.style.backgroundColor = '#C00707'}
@@ -292,7 +292,7 @@ const Navbar = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setMobileOpen(o => !o)}
-            className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-[var(--bg-muted)] transition-colors lg:hidden"
+            className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-[var(--bg-muted)] transition-colors lg:hidden cursor-pointer"
             style={{ color: 'var(--text-muted)' }}
           >
             <div className="flex flex-col gap-1.5 w-5">
@@ -338,7 +338,7 @@ const Navbar = () => {
                     to={l.to}
                     end={l.to === '/'}
                     className={({ isActive }) =>
-                      `block py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors ${
+                      `block py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors cursor-pointer ${
                         isActive
                           ? 'bg-[rgba(192,7,7,0.1)] text-[#C00707]'
                           : 'hover:bg-[var(--bg-muted)] text-[var(--text-muted)]'
