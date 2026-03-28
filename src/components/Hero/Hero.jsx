@@ -2,32 +2,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 
-function useCounter(target, duration = 2000, startOn = false) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!startOn) return;
-    let start = 0;
-    const step = target / (duration / 16);
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= target) { setCount(target); clearInterval(timer); }
-      else setCount(Math.floor(start));
-    }, 16);
-    return () => clearInterval(timer);
-  }, [target, duration, startOn]);
-  return count;
-}
-
-function HeroStat({ target, suffix, label, started }) {
-  const count = useCounter(target, 1600, started);
-  return (
-    <div>
-      <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 800, fontSize: 26, color: '#fff', margin: 0 }}>{count}{suffix}</p>
-      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', margin: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{label}</p>
-    </div>
-  );
-}
-
 const Hero = () => {
   const [visible, setVisible] = useState(false);
   const [navbarHeight, setNavbarHeight] = useState(64);
@@ -53,17 +27,15 @@ const Hero = () => {
     <section style={{
       background: 'linear-gradient(135deg, #7B0000 0%, #C00707 45%, #FF4400 80%, #FFB33F 100%)',
       minHeight: `calc(100vh - ${navbarHeight}px)`,
-      height: `calc(100vh - ${navbarHeight}px)`,
       width: '100%',
       display: 'flex',
       alignItems: 'center',
       position: 'relative',
       overflow: 'hidden',
-      margin: 0,
-      padding: 0,
+      padding: '20px 0',
     }}>
       {/* Floating orbs */}
-      <div style={{
+      <div className="orb" style={{
         position: 'absolute',
         borderRadius: '50%',
         backgroundColor: '#fff',
@@ -75,7 +47,7 @@ const Hero = () => {
         pointerEvents: 'none',
         animation: 'orb-a 7s ease-in-out infinite',
       }} />
-      <div style={{
+      <div className="orb" style={{
         position: 'absolute',
         borderRadius: '50%',
         backgroundColor: '#fff',
@@ -87,203 +59,394 @@ const Hero = () => {
         pointerEvents: 'none',
         animation: 'orb-b 5.5s ease-in-out infinite 1.2s',
       }} />
-      <div style={{
-        position: 'absolute',
-        borderRadius: '50%',
-        backgroundColor: '#fff',
-        width: 180,
-        height: 180,
-        top: '35%',
-        right: '12%',
-        opacity: 0.05,
-        pointerEvents: 'none',
-        animation: 'orb-a 6.5s ease-in-out infinite 0.6s',
-      }} />
 
-      {/* Watermark drop */}
-      <svg style={{
-        position: 'absolute',
-        right: '4%',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        width: 360,
-        height: 420,
-        pointerEvents: 'none',
-        opacity: 0.07,
-        animation: 'float-drop 9s ease-in-out infinite',
-      }} viewBox="0 0 100 120" fill="white">
-        <path d="M50 5 C50 5 8 58 8 78 A42 42 0 0 0 92 78 C92 58 50 5 50 5Z" />
-      </svg>
-
-      {/* Main content */}
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', width: '100%', position: 'relative', zIndex: 1 }}>
-        <div style={{ maxWidth: '600px' }}>
-          {/* Badge */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'rgba(255,255,255,0.16)',
-            color: '#fff',
-            fontSize: 11,
-            fontWeight: 700,
-            padding: '7px 16px',
-            borderRadius: 99,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            marginBottom: 22,
-            fontFamily: "'Sora', sans-serif",
-            backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.25)',
+      <div style={{ 
+        maxWidth: '1200px', 
+        margin: '0 auto', 
+        padding: '0 20px', 
+        width: '100%', 
+        position: 'relative', 
+        zIndex: 1,
+      }}>
+        {/* Mobile Layout */}
+        <div className="mobile-layout" style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '30px',
+        }}>
+          {/* Image Section with Badges */}
+          <div className="image-section" style={{
+            width: '100%',
+            maxWidth: '320px',
+            margin: '0 auto',
+            position: 'relative',
             opacity: visible ? 1 : 0,
             transform: visible ? 'translateY(0)' : 'translateY(20px)',
             transition: 'opacity 0.6s ease, transform 0.6s ease',
-            transitionDelay: '0.1s',
+            transitionDelay: '0.3s',
           }}>
-            <span style={{
-              width: 7,
-              height: 7,
-              borderRadius: '50%',
-              backgroundColor: '#FFB33F',
-              display: 'inline-block',
-              flexShrink: 0,
-              animation: 'pulse-live 1.8s ease infinite',
-            }} />
-            Save Lives Today
+            <div style={{
+              position: 'relative',
+              borderRadius: '24px',
+              overflow: 'hidden',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
+            }}>
+              <img 
+                src="https://surgmedia.com/wp-content/uploads/2020/10/2171-blood-donation.jpg"
+                alt="Blood donation"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  display: 'block',
+                }}
+              />
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(135deg, rgba(192,7,7,0.2) 0%, rgba(255,68,0,0.1) 100%)',
+              }} />
+            </div>
+
+            {/* Mobile Badges - Smaller version */}
+            <div style={{
+              position: 'absolute',
+              top: '-10px',
+              right: '-8px',
+              background: 'rgba(255,255,255,0.95)',
+              backdropFilter: 'blur(8px)',
+              padding: '6px 12px',
+              borderRadius: '40px',
+              boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              animation: 'float-badge 3s ease-in-out infinite',
+            }}>
+              <span style={{ fontSize: '16px' }}>🩸</span>
+              <div>
+                <p style={{ margin: 0, fontSize: '8px', color: '#666' }}>Available</p>
+                <p style={{ margin: 0, fontSize: '11px', fontWeight: 800, color: '#C00707' }}>O+ • A+ • B+</p>
+              </div>
+            </div>
+
+            <div style={{
+              position: 'absolute',
+              bottom: '-8px',
+              left: '-8px',
+              background: 'rgba(255,255,255,0.95)',
+              backdropFilter: 'blur(8px)',
+              padding: '5px 10px',
+              borderRadius: '40px',
+              boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              animation: 'float-badge 4s ease-in-out infinite',
+              animationDelay: '0.5s',
+            }}>
+              <span style={{ fontSize: '14px' }}>❤️</span>
+              <p style={{ margin: 0, fontSize: '10px', fontWeight: 600, color: '#C00707' }}>3,500+ Lives</p>
+            </div>
           </div>
 
-          {/* Headline */}
-          <h1 style={{
-            fontFamily: "'Sora', sans-serif",
-            fontWeight: 800,
-            color: '#fff',
-            margin: '0 0 18px',
-            fontSize: 'clamp(2rem,5.5vw,3.75rem)',
-            lineHeight: 1.15,
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(30px)',
-            transition: 'opacity 0.7s ease, transform 0.7s ease',
-            transitionDelay: '0.2s',
-          }}>
-            Every Drop Counts.<br />
-            <span style={{ color: '#FFE0A0' }}>Be a Hero.</span>
-          </h1>
-
-          {/* Subheading */}
-          <p style={{
-            color: 'rgba(255,255,255,0.85)',
-            fontSize: 17,
-            lineHeight: 1.72,
-            margin: '0 0 32px',
-            maxWidth: 540,
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.7s ease, transform 0.7s ease',
-            transitionDelay: '0.35s',
-          }}>
-            Bangladesh's largest blood donation network. Connect with donors, post urgent requests, and save lives — all in one place.
-          </p>
-
-          {/* Buttons */}
-          <div style={{
-            display: 'flex',
-            gap: 12,
-            flexWrap: 'wrap',
-            marginBottom: 44,
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.7s ease, transform 0.7s ease',
-            transitionDelay: '0.5s',
-          }}>
-            <Link to="/signup" style={{
-              padding: '13px 30px',
-              borderRadius: 12,
-              background: '#fff',
-              color: '#C00707',
-              fontWeight: 700,
-              fontSize: 14,
-              textDecoration: 'none',
-              fontFamily: "'Sora', sans-serif",
-              boxShadow: '0 4px 20px rgba(0,0,0,0.18)',
-              transition: 'transform 0.22s ease, background-color 0.18s ease, box-shadow 0.18s ease',
-              display: 'inline-block',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.07)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
-              Join as a Donor
-            </Link>
-            <Link to="/search" style={{
-              padding: '13px 30px',
-              borderRadius: 12,
-              background: 'rgba(255,255,255,0.14)',
-              border: '2px solid rgba(255,255,255,0.38)',
-              color: '#fff',
-              fontWeight: 700,
-              fontSize: 14,
-              textDecoration: 'none',
-              fontFamily: "'Sora', sans-serif",
-              transition: 'transform 0.22s ease, background-color 0.18s ease, box-shadow 0.18s ease',
-              display: 'inline-block',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.07)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
-              Search Donors →
-            </Link>
-          </div>
-
-          {/* Stats */}
-          <div style={{
-            display: 'flex',
-            gap: 36,
-            flexWrap: 'wrap',
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.8s ease, transform 0.8s ease',
-            transitionDelay: '0.65s',
-          }}>
-            <HeroStat target={10000} suffix="+" label="Donors" started={visible} />
-            <HeroStat target={3500} suffix="+" label="Lives Saved" started={visible} />
-            <HeroStat target={64} suffix="" label="Districts" started={visible} />
-          </div>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '16px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '4px',
-          cursor: 'pointer',
-          zIndex: 10,
-          opacity: visible ? 0.7 : 0,
-          transition: 'opacity 1s ease',
-          transitionDelay: '1.2s',
-        }}
-        onClick={() => window.scrollBy({ top: window.innerHeight, behavior: 'smooth' })}
-      >
-        <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#fff', opacity: 0.6 }}>Scroll</span>
-        <div style={{ width: '2px', height: '30px', borderRadius: '2px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.3)' }}>
-          <div style={{
+          {/* Content Section */}
+          <div className="content-section" style={{
+            textAlign: 'center',
             width: '100%',
-            height: '100%',
-            backgroundColor: '#FFB33F',
-            animation: 'scrollPulse 1.8s ease-in-out infinite',
-          }} />
+          }}>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'rgba(255,255,255,0.16)',
+              color: '#fff',
+              fontSize: 10,
+              fontWeight: 700,
+              padding: '5px 12px',
+              borderRadius: 99,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              marginBottom: 16,
+              fontFamily: "'Sora', sans-serif",
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'translateY(0)' : 'translateY(20px)',
+              transition: 'opacity 0.6s ease, transform 0.6s ease',
+              transitionDelay: '0.1s',
+            }}>
+              <span style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                backgroundColor: '#FFB33F',
+                display: 'inline-block',
+                animation: 'pulse-live 1.8s ease infinite',
+              }} />
+              Save Lives Today
+            </div>
+
+            <h1 style={{
+              fontFamily: "'Sora', sans-serif",
+              fontWeight: 800,
+              color: '#fff',
+              margin: '0 0 12px',
+              fontSize: 'clamp(28px, 7vw, 48px)',
+              lineHeight: 1.2,
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.7s ease, transform 0.7s ease',
+              transitionDelay: '0.2s',
+            }}>
+              Every Drop Counts.<br />
+              <span style={{ color: '#FFE0A0' }}>Be a Hero.</span>
+            </h1>
+
+            <p style={{
+              color: 'rgba(255,255,255,0.85)',
+              fontSize: 'clamp(14px, 4vw, 16px)',
+              lineHeight: 1.6,
+              margin: '0 0 24px',
+              padding: '0 8px',
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'translateY(0)' : 'translateY(20px)',
+              transition: 'opacity 0.7s ease, transform 0.7s ease',
+              transitionDelay: '0.35s',
+            }}>
+              Bangladesh's largest blood donation network. Connect with donors, post urgent requests, and save lives — all in one place.
+            </p>
+
+            <div style={{
+              display: 'flex',
+              gap: 10,
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'translateY(0)' : 'translateY(20px)',
+              transition: 'opacity 0.7s ease, transform 0.7s ease',
+              transitionDelay: '0.5s',
+            }}>
+              <Link to="/signup" style={{
+                padding: '10px 24px',
+                borderRadius: 10,
+                background: '#fff',
+                color: '#C00707',
+                fontWeight: 700,
+                fontSize: 'clamp(12px, 3.5vw, 14px)',
+                textDecoration: 'none',
+                fontFamily: "'Sora', sans-serif",
+                boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                transition: 'transform 0.2s ease',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
+                Join as a Donor
+              </Link>
+              <Link to="/search" style={{
+                padding: '10px 24px',
+                borderRadius: 10,
+                background: 'rgba(255,255,255,0.14)',
+                border: '2px solid rgba(255,255,255,0.4)',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: 'clamp(12px, 3.5vw, 14px)',
+                textDecoration: 'none',
+                fontFamily: "'Sora', sans-serif",
+                transition: 'transform 0.2s ease',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
+                Search Donors →
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="desktop-layout" style={{
+          display: 'none',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 60,
+        }}>
+          <div style={{ flex: 1, maxWidth: '550px' }}>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              background: 'rgba(255,255,255,0.16)',
+              color: '#fff',
+              fontSize: 11,
+              fontWeight: 700,
+              padding: '7px 16px',
+              borderRadius: 99,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              marginBottom: 22,
+              fontFamily: "'Sora', sans-serif",
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.25)',
+            }}>
+              <span style={{
+                width: 7,
+                height: 7,
+                borderRadius: '50%',
+                backgroundColor: '#FFB33F',
+                display: 'inline-block',
+                animation: 'pulse-live 1.8s ease infinite',
+              }} />
+              Save Lives Today
+            </div>
+            <h1 style={{
+              fontFamily: "'Sora', sans-serif",
+              fontWeight: 800,
+              color: '#fff',
+              margin: '0 0 18px',
+              fontSize: 'clamp(2rem,5.5vw,3.75rem)',
+              lineHeight: 1.15,
+            }}>
+              Every Drop Counts.<br />
+              <span style={{ color: '#FFE0A0' }}>Be a Hero.</span>
+            </h1>
+            <p style={{
+              color: 'rgba(255,255,255,0.85)',
+              fontSize: 17,
+              lineHeight: 1.72,
+              margin: '0 0 32px',
+              maxWidth: 540,
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}>
+              Bangladesh's largest blood donation network. Connect with donors, post urgent requests, and save lives — all in one place.
+            </p>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <Link to="/signup" style={{
+                padding: '13px 30px',
+                borderRadius: 12,
+                background: '#fff',
+                color: '#C00707',
+                fontWeight: 700,
+                fontSize: 14,
+                textDecoration: 'none',
+                fontFamily: "'Sora', sans-serif",
+                boxShadow: '0 4px 20px rgba(0,0,0,0.18)',
+                transition: 'transform 0.22s ease',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.07)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
+                Join as a Donor
+              </Link>
+              <Link to="/search" style={{
+                padding: '13px 30px',
+                borderRadius: 12,
+                background: 'rgba(255,255,255,0.14)',
+                border: '2px solid rgba(255,255,255,0.38)',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: 14,
+                textDecoration: 'none',
+                fontFamily: "'Sora', sans-serif",
+                transition: 'transform 0.22s ease',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.07)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
+                Search Donors →
+              </Link>
+            </div>
+          </div>
+
+          <div style={{ flex: 1, maxWidth: '480px', position: 'relative' }}>
+            <div style={{
+              position: 'relative',
+              borderRadius: '28px',
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px rgba(0,0,0,0.3)',
+            }}>
+              <img 
+                src="https://surgmedia.com/wp-content/uploads/2020/10/2171-blood-donation.jpg"
+                alt="Blood donation"
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(135deg, rgba(192,7,7,0.2) 0%, rgba(255,68,0,0.1) 100%)',
+              }} />
+            </div>
+
+            <div style={{
+              position: 'absolute',
+              top: '-15px',
+              right: '-15px',
+              background: 'rgba(255,255,255,0.95)',
+              backdropFilter: 'blur(10px)',
+              padding: '10px 18px',
+              borderRadius: '50px',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              animation: 'float-badge 3s ease-in-out infinite',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
+              <span style={{ fontSize: '22px' }}>🩸</span>
+              <div>
+                <p style={{ margin: 0, fontSize: '10px', color: '#666' }}>Available Now</p>
+                <p style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#C00707' }}>O+ • A+ • B+</p>
+              </div>
+            </div>
+
+            <div style={{
+              position: 'absolute',
+              bottom: '-12px',
+              left: '-15px',
+              background: 'rgba(255,255,255,0.95)',
+              backdropFilter: 'blur(10px)',
+              padding: '8px 16px',
+              borderRadius: '50px',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              animation: 'float-badge 4s ease-in-out infinite',
+              animationDelay: '0.5s',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
+              <span style={{ fontSize: '18px' }}>❤️</span>
+              <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#C00707' }}>3,500+ Lives Saved</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* CSS Animations */}
       <style>{`
-        @keyframes float-drop {
-          0%,100% { transform: translateY(-50%) rotate(-2deg); }
-          50% { transform: translateY(-53%) translateX(10px) rotate(2.5deg); }
+        @media (min-width: 769px) {
+          .mobile-layout {
+            display: none !important;
+          }
+          .desktop-layout {
+            display: flex !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .mobile-layout {
+            display: flex !important;
+          }
+          .desktop-layout {
+            display: none !important;
+          }
+          .orb {
+            display: none !important;
+          }
+        }
+        
+        @keyframes float-badge {
+          0%,100% { transform: translateY(0px); }
+          50% { transform: translateY(-6px); }
         }
         @keyframes orb-a {
           0%,100% { transform: scale(1) translateY(0px); }
@@ -296,11 +459,6 @@ const Hero = () => {
         @keyframes pulse-live {
           0%,100% { box-shadow: 0 0 0 0 rgba(255,179,63,0.7); }
           50% { box-shadow: 0 0 0 7px rgba(255,179,63,0); }
-        }
-        @keyframes scrollPulse {
-          0% { height: 0%; opacity: 1; }
-          50% { height: 70%; opacity: 0.8; }
-          100% { height: 100%; opacity: 0; }
         }
       `}</style>
     </section>
