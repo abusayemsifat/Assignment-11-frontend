@@ -4,7 +4,6 @@ import auth from '../Firebase/firebase.config';
 import { GoogleAuthProvider } from 'firebase/auth';
 import axios from 'axios';
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
 const googleProvider = new GoogleAuthProvider();
@@ -25,18 +24,12 @@ const AuthProvider = ({ children }) => {
         return signInWithPopup(auth, googleProvider)
     }
 
-
-
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser)
             setLoading(false)
         })
-
-        return () => {
-            unsubscribe()
-        }
-
+        return () => unsubscribe()
     }, [])
 
     useEffect(() => {
@@ -47,8 +40,12 @@ const AuthProvider = ({ children }) => {
                 setUserStatus(res.data.status)
                 setRoleLoading(false)
             })
+            .catch(() => {
+                setRole('donor')
+                setUserStatus('active')
+                setRoleLoading(false)
+            })
     }, [user])
-
 
     const authData = {
         registerWithEmailPassword,

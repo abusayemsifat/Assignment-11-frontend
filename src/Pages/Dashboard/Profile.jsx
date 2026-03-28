@@ -1,4 +1,3 @@
-// src/Pages/Dashboard/Profile.jsx
 import { updatePassword, updateProfile, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { useContext, useEffect, useState } from 'react';
 import auth from '../../Firebase/firebase.config';
@@ -20,21 +19,28 @@ const labelStyle    = { display:'block', marginBottom:6, fontFamily:FB, fontWeig
 const focus = e => e.target.style.borderColor = '#C00707';
 const blur  = e => e.target.style.borderColor = 'var(--border)';
 
+const roleConfig = {
+  admin: { bg: 'rgba(192,7,7,0.15)', color: '#C00707', icon: '🛡️', label: 'Admin' },
+  donor: { bg: 'rgba(19,78,142,0.15)', color: '#60a5fa', icon: '🩸', label: 'Donor' },
+  volunteer: { bg: 'rgba(22,101,52,0.15)', color: '#4ade80', icon: '🤝', label: 'Volunteer' }
+};
+
 const Profile = () => {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, role } = useContext(AuthContext);
   const axiosInstance = useAxios();
 
-  const [tab,       setTab]       = useState('profile'); // 'profile' | 'password'
+  const [tab,       setTab]       = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [saving,    setSaving]    = useState(false);
-  const [saved,     setSaved]     = useState('');  // success message string
+  const [saved,     setSaved]     = useState('');
   const [error,     setError]     = useState('');
   const [userData,  setUserData]  = useState(null);
 
-  // Password form state
   const [pwForm, setPwForm] = useState({ current:'', newPw:'', confirm:'' });
   const [pwErrors, setPwErrors] = useState({});
   const [pwSaving, setPwSaving] = useState(false);
+
+  const userRole = roleConfig[role] || roleConfig.donor;
 
   useEffect(() => {
     if (user?.email) {
@@ -44,7 +50,6 @@ const Profile = () => {
     }
   }, [user?.email, axiosInstance]);
 
-  /* ── Profile update ── */
   const handleUpdate = async (e) => {
     e.preventDefault();
     setSaving(true); setError(''); setSaved('');
@@ -75,7 +80,6 @@ const Profile = () => {
     finally { setSaving(false); }
   };
 
-  /* ── Password update ── */
   const validatePw = () => {
     const e = {};
     if (!pwForm.current)                e.current = 'Current password is required';
@@ -114,7 +118,6 @@ const Profile = () => {
         My Profile
       </h1>
 
-      {/* Avatar card */}
       <div style={{ backgroundColor:'var(--bg-subtle)', border:'1px solid var(--border)', borderRadius:20, padding:'24px', marginBottom:20, display:'flex', alignItems:'center', gap:20, flexWrap:'wrap' }}>
         <div style={{ width:80, height:80, borderRadius:'50%', overflow:'hidden', backgroundColor:'var(--bg-muted)', flexShrink:0, border:'3px solid rgba(192,7,7,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
           {user?.photoURL
@@ -125,15 +128,30 @@ const Profile = () => {
         <div style={{ flex:1 }}>
           <p style={{ fontFamily:FD, fontWeight:800, fontSize:18, color:'var(--text-primary)', margin:'0 0 2px' }}>{user?.displayName||'User'}</p>
           <p style={{ fontSize:13, color:'var(--text-muted)', margin:'0 0 6px' }}>{user?.email}</p>
-          {userData?.blood && (
-            <span style={{ display:'inline-block', padding:'3px 10px', borderRadius:8, backgroundColor:'rgba(192,7,7,0.15)', color:'#C00707', fontFamily:FD, fontWeight:700, fontSize:13 }}>
-              {userData.blood}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            {userData?.blood && (
+              <span style={{ display:'inline-block', padding:'3px 10px', borderRadius:8, backgroundColor:'rgba(192,7,7,0.15)', color:'#C00707', fontFamily:FD, fontWeight:700, fontSize:13 }}>
+                {userData.blood}
+              </span>
+            )}
+            <span style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '6px', 
+              padding: '3px 10px',
+              borderRadius: '20px',
+              backgroundColor: userRole.bg,
+              color: userRole.color,
+              fontSize: '12px',
+              fontWeight: 600
+            }}>
+              <span>{userRole.icon}</span>
+              <span>{userRole.label}</span>
             </span>
-          )}
+          </div>
         </div>
       </div>
 
-      {/* Success / Error banners */}
       {saved && (
         <div style={{ padding:'12px 16px', borderRadius:10, backgroundColor:'rgba(22,101,52,0.15)', color:'#4ade80', fontFamily:FB, fontSize:13, marginBottom:16, border:'1px solid rgba(22,101,52,0.25)' }}>
           ✅ {saved}
@@ -145,7 +163,6 @@ const Profile = () => {
         </div>
       )}
 
-      {/* Tabs */}
       <div style={{ display:'flex', gap:4, marginBottom:20, backgroundColor:'var(--bg-subtle)', padding:4, borderRadius:12, border:'1px solid var(--border)' }}>
         {[
           { key:'profile',  label:'Profile Info' },
@@ -161,7 +178,6 @@ const Profile = () => {
         ))}
       </div>
 
-      {/* ── Profile Form ── */}
       {tab === 'profile' && (
         <div style={{ backgroundColor:'var(--bg-subtle)', border:'1px solid var(--border)', borderRadius:20, padding:24 }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:20 }}>
@@ -215,7 +231,6 @@ const Profile = () => {
         </div>
       )}
 
-      {/* ── Password Form ── */}
       {tab === 'password' && (
         <div style={{ backgroundColor:'var(--bg-subtle)', border:'1px solid var(--border)', borderRadius:20, padding:24 }}>
           <p style={{ fontFamily:FD, fontWeight:700, fontSize:15, color:'var(--text-primary)', margin:'0 0 6px' }}>Change Password</p>

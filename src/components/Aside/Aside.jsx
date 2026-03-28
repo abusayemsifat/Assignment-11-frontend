@@ -7,6 +7,12 @@ import auth from "../../Firebase/firebase.config";
 const FONT_DISPLAY = "Inter, system-ui, -apple-system, sans-serif";
 const FONT_BODY    = "'Plus Jakarta Sans', sans-serif";
 
+const roleConfig = {
+  admin: { bg: 'rgba(192,7,7,0.15)', color: '#C00707', icon: '🛡️', label: 'Admin' },
+  donor: { bg: 'rgba(19,78,142,0.15)', color: '#60a5fa', icon: '🩸', label: 'Donor' },
+  volunteer: { bg: 'rgba(22,101,52,0.15)', color: '#4ade80', icon: '🤝', label: 'Volunteer' }
+};
+
 const Icon = ({ path, size = 18 }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
         stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -29,7 +35,6 @@ const ICONS = {
     website:   "M19 12H5 M12 19l-7-7 7-7",
 };
 
-/* Pure CSS for nav links — avoids the onMouseEnter inline-style permanence bug */
 const NAV_CSS = `
     .aside-link {
         display: flex;
@@ -122,7 +127,6 @@ const NavItem = ({ to, end, icon, label, onClick }) => (
     </NavLink>
 );
 
-/* Animates nav items in on mount using GSAP if available */
 const AnimatedNav = ({ children }) => {
     const ref = useRef(null);
     useEffect(() => {
@@ -137,9 +141,7 @@ const AnimatedNav = ({ children }) => {
                     { opacity: 0, x: -14 },
                     { opacity: 1, x: 0, duration: 0.35, stagger: 0.045, ease: 'power2.out', delay: 0.1 }
                 );
-            } catch {
-                // no gsap - items just appear
-            }
+            } catch {}
         };
         run();
     }, []);
@@ -147,14 +149,14 @@ const AnimatedNav = ({ children }) => {
 };
 
 const Aside = ({ onClose }) => {
-    const { role } = useContext(AuthContext);
+    const { role, user } = useContext(AuthContext);
     const navigate = useNavigate();
     const footerRef = useRef(null);
+    const userRole = roleConfig[role] || roleConfig.donor;
 
     const handleLogout = () => signOut(auth).then(() => navigate("/"));
     const close = onClose || (() => {});
 
-    // Animate footer buttons in
     useEffect(() => {
         const el = footerRef.current;
         if (!el) return;
@@ -182,8 +184,6 @@ const Aside = ({ onClose }) => {
                 padding: "0 12px", boxSizing: "border-box",
                 overflowY: "auto",
             }}>
-
-                {/* ── Logo ── */}
                 <div style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     padding: "22px 6px 18px",
@@ -214,7 +214,60 @@ const Aside = ({ onClose }) => {
                     )}
                 </div>
 
-                {/* ── Navigation (GSAP stagger animated) ── */}
+                {/* User Info with Role Badge */}
+                {user && (
+                    <div style={{
+                        padding: "12px 12px 16px 12px",
+                        borderBottom: "1px solid var(--border, rgba(255,255,255,0.08))",
+                        marginBottom: 8,
+                    }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            {user.photoURL ? (
+                                <img src={user.photoURL} alt="" style={{
+                                    width: 44, height: 44, borderRadius: 12, objectFit: "cover",
+                                    border: "2px solid rgba(192,7,7,0.3)"
+                                }} />
+                            ) : (
+                                <div style={{
+                                    width: 44, height: 44, borderRadius: 12,
+                                    backgroundColor: "rgba(192,7,7,0.1)",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    fontSize: 20
+                                }}>👤</div>
+                            )}
+                            <div style={{ flex: 1 }}>
+                                <p style={{
+                                    fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 14,
+                                    color: "var(--text-primary, #fff)", margin: 0
+                                }}>
+                                    {user.displayName || "User"}
+                                </p>
+                                <p style={{
+                                    fontSize: 11, color: "var(--text-faint, #6b7280)",
+                                    margin: "2px 0 0"
+                                }}>
+                                    {user.email}
+                                </p>
+                                <div style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                    marginTop: "6px",
+                                    padding: "2px 8px",
+                                    borderRadius: "16px",
+                                    backgroundColor: userRole.bg,
+                                    color: userRole.color,
+                                    fontSize: "10px",
+                                    fontWeight: 600
+                                }}>
+                                    <span>{userRole.icon}</span>
+                                    <span>{userRole.label}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <AnimatedNav>
                     <SectionLabel label="Overview" />
                     <NavItem to="/dashboard" end icon={ICONS.home} label="Dashboard" onClick={close} />
@@ -242,7 +295,6 @@ const Aside = ({ onClose }) => {
                     <NavItem to="/dashboard/settings" icon={ICONS.settings} label="Settings" onClick={close} />
                 </AnimatedNav>
 
-                {/* ── Footer: Home + Logout ── */}
                 <div ref={footerRef} style={{
                     padding: "12px 0 20px",
                     borderTop: "1px solid var(--border, rgba(255,255,255,0.08))",
@@ -258,7 +310,6 @@ const Aside = ({ onClose }) => {
                         Logout
                     </button>
                 </div>
-
             </aside>
         </>
     );

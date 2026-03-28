@@ -8,36 +8,55 @@ import { AuthContext } from '../../Provider/AuthProvider';
 import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
 
-// Public links (logged out)
 const publicLinks = [
-  { to: '/',             label: 'Home' },
+  { to: '/', label: 'Home' },
   { to: '/all-requests', label: 'Blood Requests' },
-  { to: '/search',       label: 'Find Donors' },
-  { to: '/donate',       label: 'Donate' },
-  { to: '/blog',         label: 'Blog' },
-  { to: '/about',        label: 'About' },
-  { to: '/contact',      label: 'Contact' },
+  { to: '/search', label: 'Find Donors' },
+  { to: '/donate', label: 'Donate' },
+  { to: '/blog', label: 'Blog' },
+  { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
 ];
 
-// Logged in links
 const loggedInLinks = [
-  { to: '/',             label: 'Home' },
+  { to: '/', label: 'Home' },
   { to: '/all-requests', label: 'Blood Requests' },
-  { to: '/search',       label: 'Find Donors' },
-  { to: '/donate',       label: 'Donate' },
-  { to: '/dashboard',    label: 'Dashboard' },
-  { to: '/blog',         label: 'Blog' },
-  { to: '/about',        label: 'About' },
-  { to: '/contact',      label: 'Contact' },
+  { to: '/search', label: 'Find Donors' },
+  { to: '/donate', label: 'Donate' },
+  { to: '/dashboard', label: 'Dashboard' },
+  { to: '/blog', label: 'Blog' },
+  { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
 ];
+
+const roleConfig = {
+  admin: { bg: 'rgba(192,7,7,0.15)', color: '#C00707', icon: '🛡️', label: 'Admin' },
+  donor: { bg: 'rgba(19,78,142,0.15)', color: '#60a5fa', icon: '🩸', label: 'Donor' },
+  volunteer: { bg: 'rgba(22,101,52,0.15)', color: '#4ade80', icon: '🤝', label: 'Volunteer' }
+};
 
 const getInitials = (name) => {
   if (!name) return 'U';
   return name.charAt(0).toUpperCase();
 };
 
+const Avatar = ({ user }) => {
+  if (user?.photoURL) {
+    return (
+      <img src={user.photoURL} alt={user.displayName || 'User'}
+        className="w-8 h-8 rounded-full object-cover border-2 border-[#C00707]" />
+    );
+  }
+  return (
+    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#C00707] to-[#FF4400] text-white flex items-center
+                    justify-center text-sm font-bold shadow-md shadow-[#C00707]/30">
+      {(user?.displayName || user?.email || 'U')[0].toUpperCase()}
+    </div>
+  );
+};
+
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
+  const { user, role } = useContext(AuthContext);
   const { dark, toggle } = useTheme();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -48,6 +67,7 @@ const Navbar = () => {
   const dropRef = useRef(null);
 
   const links = user ? loggedInLinks : publicLinks;
+  const userRole = roleConfig[role] || roleConfig.donor;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -75,6 +95,7 @@ const Navbar = () => {
     toast.success('Logged out successfully');
     navigate('/login');
     setDropOpen(false);
+    setMobileOpen(false);
   };
 
   return (
@@ -93,8 +114,6 @@ const Navbar = () => {
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
           <motion.div
             whileHover={{ scale: 1.1 }}
@@ -108,7 +127,6 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Desktop links */}
         <div className="hidden lg:flex items-center gap-8">
           {links.map(l => (
             <NavLink
@@ -136,9 +154,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Right side */}
         <div className="flex items-center gap-2">
-          {/* Theme toggle */}
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={toggle}
@@ -166,17 +182,7 @@ const Navbar = () => {
                 onClick={() => setDropOpen(d => !d)}
                 className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl hover:bg-[var(--bg-muted)] transition-colors"
               >
-                {user.photoURL ? (
-                  <img
-                    src={user.photoURL}
-                    alt="avatar"
-                    className="w-8 h-8 rounded-xl object-cover ring-2 ring-[#C00707]/20"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#C00707] to-[#FF4400] text-white text-xs font-bold flex items-center justify-center shadow-md shadow-[#C00707]/30">
-                    {getInitials(user.displayName || user.email)}
-                  </div>
-                )}
+                <Avatar user={user} />
                 <span className="hidden md:block text-sm font-semibold max-w-[100px] truncate" style={{ color: 'var(--text-primary)' }}>
                   {user.displayName || 'User'}
                 </span>
@@ -210,9 +216,24 @@ const Navbar = () => {
                       <p className="text-xs truncate" style={{ color: 'var(--text-faint)' }}>
                         {user.email}
                       </p>
+                      <div style={{ 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        gap: '4px', 
+                        marginTop: '8px',
+                        padding: '2px 8px',
+                        borderRadius: '16px',
+                        backgroundColor: userRole.bg,
+                        color: userRole.color,
+                        fontSize: '10px',
+                        fontWeight: 600
+                      }}>
+                        <span>{userRole.icon}</span>
+                        <span>{userRole.label}</span>
+                      </div>
                     </div>
                     {[
-                      { to: '/dashboard',         icon: '📊', label: 'Dashboard' },
+                      { to: '/dashboard', icon: '📊', label: 'Dashboard' },
                       { to: '/dashboard/profile', icon: '👤', label: 'My Profile' },
                       { to: '/dashboard/my-request', icon: '🩸', label: 'My Requests' },
                     ].map(item => (
@@ -268,7 +289,6 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Hamburger - Mobile */}
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setMobileOpen(o => !o)}
@@ -296,7 +316,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -331,27 +350,6 @@ const Navbar = () => {
                   </NavLink>
                 </motion.div>
               ))}
-
-              {!user && (
-                <div className="flex gap-2 pt-2 mt-2 border-t" style={{ borderTopColor: 'var(--border)' }}>
-                  <Link to="/login" onClick={() => setMobileOpen(false)} className="flex-1">
-                    <button
-                      className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors"
-                      style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                    >
-                      Login
-                    </button>
-                  </Link>
-                  <Link to="/signup" onClick={() => setMobileOpen(false)} className="flex-1">
-                    <button
-                      className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-white"
-                      style={{ backgroundColor: '#C00707' }}
-                    >
-                      Sign Up
-                    </button>
-                  </Link>
-                </div>
-              )}
             </div>
           </motion.div>
         )}
